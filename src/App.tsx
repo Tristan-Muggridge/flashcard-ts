@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { collection, doc, addDoc, setDoc, getDoc} from "firebase/firestore"; 
+import { collection, doc, addDoc, setDoc, getDoc, Firestore, WriteBatch, writeBatch} from "firebase/firestore"; 
 import { db } from './util/firebase';
 
 import Flashcard from './flashcard';
 import './App.css'
+import DataContext, { FirebaseData, LocalData } from './context/DataContext';
+import TestComponent from './TestComponent';
 
 const collectionRef = collection(db, "flashcard")
 
@@ -11,36 +13,31 @@ function App() {
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-	const getFlashCards = async () => {
-		const docRef = doc(db, "flashcard/flashcard").withConverter(Flashcard.FirestoreConverter);
-		
-		await setDoc( docRef, new Flashcard("convertedPrompt", "convertedAnswer"))
-		
-		const docSnap = await getDoc(docRef);
 
-		if (docSnap.exists()) {
-			console.log("Document data:", docSnap.data());
-		} else {
-			// doc.data() will be undefined in this case
-			console.log("No such document!");
-		}
-	} 
+	// localStorage.setItem('flashcards', JSON.stringify([
+	// 	new Flashcard("発展", "development"),
+	// 	new Flashcard("散歩", "stroll"),
+	// 	new Flashcard("耳", "ear"),
+	// 	new Flashcard("舌", "tongue"),
+	// 	new Flashcard("ヘソ", "navel"),
+	// 	new Flashcard("口", "mouth"),
+	// ]))
 
-	// const addFlashCard = async () => {
-	// 	const docRef = await addDoc(collectionRef, new Flashcard("addedPrompt", "addedAnswer").toJson())
-	// 	console.debug(docRef);
-	// }
+	// const firebase = FirebaseData.getAllFlashcards().then(data => console.log('firebase', data))
+	// const local = LocalData.getAllFlashcards().then(data => console.debug('local', data));
 
-	// addFlashCard();
-
-	// getFlashCards();
   }, [])
 
   return (
     <div className="App">
-      	<div>
-        
-    	</div>
+      	<DataContext.Provider value={ LocalData }>
+			<h1> From LocalData </h1>
+			<TestComponent />
+		</DataContext.Provider>
+      	<DataContext.Provider value={ FirebaseData }>
+			<h1> From Firebase </h1>
+			<TestComponent />
+		</DataContext.Provider>
     </div>
   )
 }
