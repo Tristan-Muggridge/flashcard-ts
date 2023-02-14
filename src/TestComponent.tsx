@@ -13,11 +13,23 @@ export default function () {
     }, [])
 
     return (
-        <li>
-        {
-            flashcards.map(data => <li> {data.prompt} </li>)
-        }
-        </li>
+        <table>
+            <thead>
+                <tr>
+                    <th>Prompt</th>
+                    <th>Answer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    flashcards.map(data => data.prompt && data.answer && <tr> 
+                        <td>{data.prompt}</td>
+                        <td>{data.answer}</td> 
+                    </tr>)
+                }
+            </tbody>
+        
+        </table>
     )
 
 }
