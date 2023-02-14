@@ -1,4 +1,4 @@
-interface IFlashcard {
+export interface IFlashcard {
 	prompt: string;
 	answer: string;
 	streak: number;
@@ -17,13 +17,13 @@ class Flashcard implements IFlashcard{
 	incorrectQty: number;
 	lastReview: Date;
 	
-	constructor(prompt: string, answer: string) {
-		this.prompt= prompt;
+	constructor(prompt: string, answer: string, streak?: number, correctQty?: number, incorrectQty?: number, lastReview?: Date) {
+        this.prompt= prompt;
 		this.answer= answer;
-		this.streak= 0;
-		this.correctQty= 0;
-		this.incorrectQty= 0;
-		this.lastReview= new Date();
+		this.streak= streak || 0;
+		this.correctQty= correctQty || 0;
+		this.incorrectQty= incorrectQty || 0;
+		this.lastReview= lastReview || new Date();
 	}
 
 	toJson = () => {
@@ -38,6 +38,15 @@ class Flashcard implements IFlashcard{
 		return output;
 	}
 
+    static fromJson = (obj: IFlashcard) => new Flashcard(
+        obj.prompt,
+        obj.answer,
+        obj.streak,
+        obj.correctQty,
+        obj.incorrectQty,
+        obj.lastReview
+    )
+
 	static FirestoreConverter = {
 		toFirestore: (card: Flashcard) => {
 			return {
@@ -51,7 +60,7 @@ class Flashcard implements IFlashcard{
 		},
 		fromFirestore: (snapshot: any, options: any) => {
 			const data = snapshot.data(options)
-			return new Flashcard(data.prompt, data.answer);
+			return new Flashcard(data.prompt, data.answer, data.streak, data.correctQty, data.incorrectQty, data.lastReview);
 		}
 	}
 }
