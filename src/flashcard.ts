@@ -1,4 +1,5 @@
 export interface IFlashcard {
+	id: string;
 	prompt: string;
 	answer: string;
 	streak: number;
@@ -10,6 +11,7 @@ export interface IFlashcard {
 }
 
 class Flashcard implements IFlashcard{
+	id: string;
 	prompt: string;
 	answer: string;
 	streak: number;
@@ -17,8 +19,9 @@ class Flashcard implements IFlashcard{
 	incorrectQty: number;
 	lastReview: Date;
 	
-	constructor(prompt: string, answer: string, streak?: number, correctQty?: number, incorrectQty?: number, lastReview?: Date) {
-        this.prompt= prompt;
+	constructor(prompt: string, answer: string, streak?: number, correctQty?: number, incorrectQty?: number, lastReview?: Date, id?:string) {
+        this.id = id || `${prompt}-${answer}`
+		this.prompt= prompt;
 		this.answer= answer;
 		this.streak= streak || 0;
 		this.correctQty= correctQty || 0;
@@ -28,6 +31,7 @@ class Flashcard implements IFlashcard{
 
 	toJson = () => {
 		const output: IFlashcard = {
+			id: this.id,
 			prompt: this.prompt,
 			answer: this.answer,
 			streak: this.streak,
@@ -50,6 +54,7 @@ class Flashcard implements IFlashcard{
 	static FirestoreConverter = {
 		toFirestore: (card: Flashcard) => {
 			return {
+				id: card.id,
 				prompt: card.prompt,
 				answer: card.answer,
 				streak: card.streak,
@@ -60,7 +65,7 @@ class Flashcard implements IFlashcard{
 		},
 		fromFirestore: (snapshot: any, options: any) => {
 			const data = snapshot.data(options)
-			return new Flashcard(data.prompt, data.answer, data.streak, data.correctQty, data.incorrectQty, data.lastReview);
+			return new Flashcard(data.prompt, data.answer, data.streak, data.correctQty, data.incorrectQty, data.lastReview, snapshot.id);
 		}
 	}
 }

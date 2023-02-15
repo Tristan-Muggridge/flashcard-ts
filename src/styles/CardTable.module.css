@@ -1,0 +1,12 @@
+.cardTable td {
+    padding: 0.5rem 1rem;
+}
+
+.delete {
+    cursor: pointer;
+}
+
+.delete:hover {
+    color: red;
+}
+

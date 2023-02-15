@@ -1,53 +1,68 @@
-import React from "react";
+import React, { useState } from "react";
 import { db } from "../util/firebase";
-import { collection, getDoc, getDocs } from "firebase/firestore"; 
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs } from "firebase/firestore"; 
 import Flashcard, {IFlashcard} from "../flashcard";
 
 
-interface IDataContext {
-    create():any;
+
+export interface IDataContext {
+    create(card: Flashcard):Promise<Flashcard>;
     getAllFlashcards():Promise<Flashcard[]>;
+	deleteCard(card: Flashcard):void
 }
 
-export const FirebaseData: IDataContext = {
-    create: () => {},
-    getAllFlashcards: async () => {
+export const FirebaseData: IDataContext = {	
+	create: async (card: Flashcard) => {
+		const createFlashCard = async () => {
+			console.debug("db: Create")
+
+			// const collectionRef = collection(db, `flashcard/${card.prompt}-${card.answer}`);
+			const collectionRef = collection(db, "flashcards");
+			const docId = (await addDoc(collectionRef, card.toJson())).withConverter(Flashcard.FirestoreConverter).id
+			const docRef = doc(db, "flashcards", docId).withConverter(Flashcard.FirestoreConverter)
+			const docSnap = await (await getDoc(docRef)).data();
+			return docSnap as Flashcard;
+		}
+
+		return createFlashCard();
+	},
+    
+	getAllFlashcards: async () => {
+		console.debug("db: Read")
+
         const fetchFlashcards = async () => {
             const flashcards = await getDocs(collection(db, 'flashcards').withConverter(Flashcard.FirestoreConverter));
             return flashcards.docs.map(doc => doc.data())
         }
         return fetchFlashcards();
-    }
+    },
+
+	deleteCard: async (card: Flashcard) => {
+		console.debug("firebase: Delete")
+		console.debug(card)
+		await deleteDoc(doc(db, "flashcards", card.id));
+	}
 }
 
 export const LocalData: IDataContext = {
-    create: () => {},
-    getAllFlashcards: () => new Promise(resolve => resolve(JSON.parse(localStorage.getItem('flashcards') || "[]").map( (e:IFlashcard) => Flashcard.fromJson(e))))
+    create: async (card: Flashcard) => new Promise(resolve => {
+		console.debug("localData: Create")
+		const currentCards: Flashcard[] = JSON.parse(localStorage.getItem('flashcards') || "[]").map( (e:IFlashcard) => Flashcard.fromJson(e));
+		const updatedCards = [card, ...currentCards];
+		localStorage.setItem('flashcards', JSON.stringify(updatedCards));
+		resolve(card);
+	}),
+    
+	getAllFlashcards: async () => new Promise(resolve => {
+		console.debug("localData: Read")
+		resolve(JSON.parse(localStorage.getItem('flashcards') || "[]").map( (e:IFlashcard) => Flashcard.fromJson(e)))
+	}),
+
+	deleteCard: (card: Flashcard) => {
+		console.debug("localData: Delete")
+		const cards: Flashcard[] = JSON.parse(localStorage.getItem('flashcards') || "[]");
+		localStorage.setItem('flashcards', JSON.stringify(cards.filter(e => e.id != card.id)));
+	}
 }
 
 export default React.createContext<IDataContext | null>(FirebaseData)
-
-/*
-
-const getFlashCards = async () => {
-		const docRef = doc(db, "flashcard/flashcard").withConverter(Flashcard.FirestoreConverter);
-		
-		await setDoc( docRef, new Flashcard("convertedPrompt", "convertedAnswer"))
-		
-		const docSnap = await getDoc(docRef);
-
-		if (docSnap.exists()) {
-			console.log("Document data:", docSnap.data());
-		} else {
-			// doc.data() will be undefined in this case
-			console.log("No such document!");
-		}
-	} 
-
-	const addFlashCard = async () => {
-		const docRef = await (await addDoc(collectionRef, new Flashcard("addedPrompt", "addedAnswer").toJson())).withConverter(Flashcard.FirestoreConverter)
-		console.debug(docRef.id);
-	}
-
-
-*/

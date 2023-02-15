@@ -1,0 +1,18 @@
+.cardForm {
+
+    margin: 5rem;
+    display: grid;
+    grid-template-columns: repeat(1fr, 3);
+    grid-template-rows: auto;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.cardForm label {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.cardForm input {
+    padding: 0.125rem !important;
+}
