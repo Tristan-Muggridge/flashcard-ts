@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { db } from "../util/firebase";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs } from "firebase/firestore"; 
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore"; 
 import Flashcard, {IFlashcard} from "../flashcard";
 
 
@@ -8,7 +8,8 @@ import Flashcard, {IFlashcard} from "../flashcard";
 export interface IDataContext {
     create(card: Flashcard):Promise<Flashcard>;
     getAllFlashcards():Promise<Flashcard[]>;
-	deleteCard(card: Flashcard):void
+	deleteCard(card: Flashcard):void;
+	updateCard(card: IFlashcard, index?:number):void;
 }
 
 export const FirebaseData: IDataContext = {	
@@ -37,11 +38,16 @@ export const FirebaseData: IDataContext = {
         return fetchFlashcards();
     },
 
-	deleteCard: async (card: Flashcard) => {
+	deleteCard: async (card: IFlashcard) => {
 		console.debug("firebase: Delete")
 		console.debug(card)
 		await deleteDoc(doc(db, "flashcards", card.id));
-	}
+	},
+
+	updateCard: async (card: Flashcard) => {
+		console.debug("firebase: Update")
+		await setDoc(doc(db, "flashcards", card.id), card.toJson());
+	},
 }
 
 export const LocalData: IDataContext = {
@@ -62,6 +68,13 @@ export const LocalData: IDataContext = {
 		console.debug("localData: Delete")
 		const cards: Flashcard[] = JSON.parse(localStorage.getItem('flashcards') || "[]");
 		localStorage.setItem('flashcards', JSON.stringify(cards.filter(e => e.id != card.id)));
+	},
+
+	updateCard: (card: Flashcard, index: number) => {
+		console.debug("LocalData: Update")
+		const cards: Flashcard[] = JSON.parse(localStorage.getItem('flashcards') || "[]");
+		cards[index] = card
+		localStorage.setItem('flashcards', JSON.stringify(cards));
 	}
 }
 
