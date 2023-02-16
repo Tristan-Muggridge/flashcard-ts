@@ -11,29 +11,31 @@ Technologies Used:
 
 Milestones:
 
-<h3>User Generated Cards</h3>
+### User Generated Cards
 - [x] be able to create cards
 - [x] be able to store cards
 - [x] be able to retrieve stored cards
 - [x] be able to update cards (so far only prompt / answer)
 
-<h3> Quiz Time </h3>
-  - [] honour system (select from 1-5 how well information could be retrieved)
-  - [] input system (allow user input on prompt and determine if user was correct, wrong, or close)
-  - [] update relevant card objects upon finishing review of specific card
+![update operations](https://user-images.githubusercontent.com/89533155/219385485-a6149af0-d258-40b5-9541-52daff419524.gif)
+
+### Quiz Time
+  - honour system (select from 1-5 how well information could be retrieved)
+  - input system (allow user input on prompt and determine if user was correct, wrong, or close)
+  - update relevant card objects upon finishing review of specific card
   
-<h3> decks Functionality </h3>
-  - [] Ability to create decks
-  - [] Ability to add / remove cards from a deck
-  - [] Hide card from deck
+### decks Functionality
+  - Ability to create decks
+  - Ability to add / remove cards from a deck
+  - Hide card from deck
   
-<h3> Data Management Options </h3>
-    - [] Import CSV: Import a CSV of card data into a collection of cards
-    - [] Export CSV: Export a collection of cards to comma delimited CSV
-    - [] Migrate to Cloud: Transfer all LocalStorage cards to Firestore
-    - [] Make it Rain: Transfer all User Firestore data to LocalStorage
-    - [] Sync: keep LocalStorage and Firestore in sync with each other (user-toggle) 
+### Data Management Options
+- Import CSV: Import a CSV of card data into a collection of cards
+- Export CSV: Export a collection of cards to comma delimited CSV
+- Migrate to Cloud: Transfer all LocalStorage cards to Firestore
+- Make it Rain: Transfer all User Firestore data to LocalStorage
+- Sync: keep LocalStorage and Firestore in sync with each other (user-toggle) 
     
-<h3> User Authentication </h3>
-  - [] Implement fireauth to get auth working with application so that I can open app to users
-  - [] tweaks to data processes to utilise user Id in the CRUD processes.
+### User Authentication
+  - Implement fireauth to get auth working with application so that I can open app to users
+  - tweaks to data processes to utilise user Id in the CRUD processes.
