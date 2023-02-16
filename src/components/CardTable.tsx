@@ -1,5 +1,5 @@
 import { useEffect, useContext, useState } from "react";
-import {BsFillPencilFill, BsTrash} from "react-icons/bs"
+import {BsFillPencilFill, BsTrash, BsX} from "react-icons/bs"
 
 import Flashcard, { IFlashcard } from "../flashcard";
 import DataContext from "../context/DataContext";
@@ -63,22 +63,22 @@ export default function ({flashcards, setFlashCards}: IProps) {
         </table>
 
         {
-            editing > -1 && <EditModal card={flashcards[editing]} index={editing} handleSubmit={handleUpdate} />
+            editing > -1 && <EditModal card={flashcards[editing]} index={editing} handleSubmit={handleUpdate} close={()=>setEditing(-1)}/>
         }
         </>
     )
 }
 
-const EditModal = ({card, index, handleSubmit}: {card: IFlashcard, index: number, handleSubmit(card: IFlashcard, index: number):void}) => {
+const EditModal = ({card, index, handleSubmit, close}: {card: IFlashcard, index: number, close():void, handleSubmit(card: IFlashcard, index: number):void}) => {
     return <div className={styles.editModal}>
-        <form onSubmit={(e) => {e.preventDefault(); card.prompt = e.target.prompt.value; card.answer = e.target.answer.value; handleSubmit(card, index)}}>
+            <div className={styles.close} onClick={close}> <BsX /> </div>
+        <form onSubmit={(e: any) => {e.preventDefault(); card.prompt = e.target.prompt.value; card.answer = e.target.answer.value; handleSubmit(card, index)}}>
             <label htmlFor="prompt">Prompt</label>
             <input type="text" id="prompt" />
             <label htmlFor="answer">Answer</label>
             <input type="text" id="answer" />
             <label htmlFor="active">Active</label>
             <input type="checkbox" id="active" />
-
             <button> Save Changes </button>
         </form>
     </div>
