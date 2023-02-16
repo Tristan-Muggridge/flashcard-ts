@@ -42,30 +42,25 @@ class Flashcard implements IFlashcard{
 		return output;
 	}
 
-    static fromJson = (obj: IFlashcard) => new Flashcard(
+	updateLastReviewed = (date: Date) => this.lastReview = date;
+
+    static fromJson = (obj: IFlashcard, id?:string) => new Flashcard(
         obj.prompt,
         obj.answer,
         obj.streak,
         obj.correctQty,
         obj.incorrectQty,
-        obj.lastReview
+        obj.lastReview,
+		id ?? `${obj.prompt}-${obj.answer}`
     )
 
 	static FirestoreConverter = {
 		toFirestore: (card: Flashcard) => {
-			return {
-				id: card.id,
-				prompt: card.prompt,
-				answer: card.answer,
-				streak: card.streak,
-				correctQty: card.correctQty,
-				incorrectQty: card.incorrectQty,
-				lastReview: card.lastReview
-			};
+			return card.toJson();
 		},
 		fromFirestore: (snapshot: any, options: any) => {
 			const data = snapshot.data(options)
-			return new Flashcard(data.prompt, data.answer, data.streak, data.correctQty, data.incorrectQty, data.lastReview, snapshot.id);
+			return Flashcard.fromJson(data, snapshot.id);
 		}
 	}
 }
