@@ -22,6 +22,7 @@ Milestones:
 ### Quiz Time
   - honour system (select from 1-5 how well information could be retrieved)
   - input system (allow user input on prompt and determine if user was correct, wrong, or close)
+  - multiple choice (Present a range of other card answers and allow user to attempt selecting the matching answer to displayed prompt)
   - update relevant card objects upon finishing review of specific card
   
 ### decks Functionality
