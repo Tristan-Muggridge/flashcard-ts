@@ -26,10 +26,13 @@ Milestones:
   - update relevant card objects upon finishing review of specific card
   
 ### decks Functionality
+  - Decks UI (WIP)
   - Ability to create decks
   - Ability to add / remove cards from a deck
   - Hide card from deck
-  
+
+  ![collections wip](https://user-images.githubusercontent.com/89533155/219688829-6ef4d426-0318-43e6-9799-1f6926dc7d02.gif)
+
 ### Data Management Options
 - Import CSV: Import a CSV of card data into a collection of cards
 - Export CSV: Export a collection of cards to comma delimited CSV
