@@ -3,7 +3,10 @@ import DataContext, { FirebaseData, LocalData, IDataContext } from './context/Da
 import CardTable from './components/CardTable';
 import FlashCardComposeForm from './components/FlashCardComposeForm';
 import Flashcard from './flashcard';
+import Collection from './components/Collection';
+
 import './styles/App.css'
+import CollectionSelection from './components/CollectionSelection';
 
 
 function App() {
@@ -17,8 +20,12 @@ function App() {
 	
 	return (
 		<div className="App">
+			<h1> Collections </h1>
 			<DataContext.Provider value={ LocalData }>
-				<h1> From LocalData </h1>
+
+				<CollectionSelection />
+
+				{/* <h1> From LocalData </h1>
 				<CardTable flashcards={localCards} setFlashCards={setLocalCards}/>
 				<FlashCardComposeForm 
 				fields={[
@@ -36,9 +43,9 @@ function App() {
 
 					formElements.Prompt.focus();
 				}}
-				/>
+				/> */}
 			</DataContext.Provider>
-			<DataContext.Provider value={ FirebaseData }>
+			{/* <DataContext.Provider value={ FirebaseData }>
 				<h1> From Firebase </h1>
 				<CardTable flashcards={dbCards} setFlashCards={setdbCards}/>
 				<FlashCardComposeForm 
@@ -57,7 +64,7 @@ function App() {
 					formElements.Prompt.focus();
 				}}
 				/>
-			</DataContext.Provider>
+			</DataContext.Provider> */}
 		</div>
   	)
 }

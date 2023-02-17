@@ -33,7 +33,7 @@ export default function ({flashcards, setFlashCards}: IProps) {
     }
 
     useEffect( () => {
-        dataContext?.getAllFlashcards().then(data => setFlashCards(data))
+        // dataContext?.getAllFlashcards().then(data => setFlashCards(data))
     }, [])
 
     return (
@@ -69,7 +69,7 @@ export default function ({flashcards, setFlashCards}: IProps) {
     )
 }
 
-const EditModal = ({card, index, handleSubmit, close}: {card: IFlashcard, index: number, close():void, handleSubmit(card: IFlashcard, index: number):void}) => {
+const EditModal = ({card, index, handleSubmit, close}: {card: IFlashcard, index: number, close():void, handleSubmit(card: IFlashcard, index: number):void}) => {    
     return <div className={styles.editModal}>
             <div className={styles.close} onClick={close}> <BsX /> </div>
         <form onSubmit={(e: any) => {e.preventDefault(); card.prompt = e.target.prompt.value; card.answer = e.target.answer.value; handleSubmit(card, index)}}>
