@@ -2,13 +2,17 @@
     padding: 0.25rem 1rem;
 }
 
-.delete, .edit {
+.delete, .edit, .plus {
     cursor: pointer;
     margin: 0 0.5rem;
 }
 
 .edit:hover {
     color: orange
+}
+
+.plus:hover {
+    color: green
 }
 
 .delete:hover, .close:hover {
@@ -18,10 +22,16 @@
 .cardTable {
     width: 100%;
     border-collapse: collapse;
+    text-align: center;
+    margin: auto;
 }
 
 .cardTable tr {
     border-bottom: rgba(255, 255, 255, 0.87) 1px solid;
+}
+
+.cardTable td {
+    margin: auto;
 }
 
 .editModal {

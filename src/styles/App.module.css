@@ -1,0 +1,36 @@
+
+.storageToggleContainer {
+    cursor: pointer;
+    user-select: none;
+}
+
+.storageToggleContainer h5 {
+    margin: 0;
+    padding: 0;
+}
+
+.storageToggleBar {
+    content: " ";
+    background-color: grey;
+    width: 100px;
+    height: 10px;
+    border-radius: 5px;
+    position: relative;
+
+}
+
+.storageCloudIcon, .storageFolderIcon {
+    position: absolute;
+    opacity: 100%;
+    color: white;
+
+    top: 0;
+}
+
+.storageCloudIcon {
+    right: 0;
+}
+
+.storageFolderIcon {
+    left: 0;
+}

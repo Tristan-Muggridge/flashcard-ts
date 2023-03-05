@@ -1,70 +1,62 @@
 import { useState } from 'react';
-import DataContext, { FirebaseData, LocalData, IDataContext } from './context/DataContext';
-import CardTable from './components/CardTable';
-import FlashCardComposeForm from './components/FlashCardComposeForm';
-import Flashcard from './flashcard';
-import Collection from './components/Collection';
+import DataContext, { FirebaseData, LocalData } from './context/DataContext';
+import {BsFolderFill, BsCloudFill} from 'react-icons/bs'
 
-import './styles/App.css'
+import styles from './styles/App.module.css'
 import CollectionSelection from './components/CollectionSelection';
 
+import Auth from './components/Auth';
+import { User } from 'firebase/auth';
+
+function getLocalStorageSpace(){
+	var allStrings: string | any[] = [];
+	for(var key in window.localStorage){
+		if(window.localStorage.hasOwnProperty(key)){
+			allStrings.push(window.localStorage[key]);
+		}
+	}
+	return allStrings ? 3 + ((allStrings.join('').length*16)/(8*1024)) + ' KB' : 'Empty (0 KB)';
+};
+
+enum StorageMode  {
+	"Local" = "Local",
+	"Cloud" = "Cloud"
+}
 
 function App() {
 
-	const [localCards, setLocalCards] = useState<Flashcard[]>([]);
-	const [dbCards, setdbCards] = useState<Flashcard[]>([]);
-	const [newLocalCardPrompt, setNewLocalCardPrompt] = useState("");
-	const [newDbCardPrompt, setDbNewCardPrompt] = useState("");
-	const [newLocalCardAnswer, setLocalNewCardAnswer] = useState("");
-	const [newDbCardAnswer, setDbNewCardAnswer] = useState("");
-	
+	console.debug(getLocalStorageSpace())
+	const [user, setUser] = useState<User>();
+	const [storageMode, setStorageMode] = useState<StorageMode>(StorageMode.Local);
+
+	const toggleStorageMode = () => {
+		storageMode == StorageMode.Local 
+			? setStorageMode(StorageMode.Cloud) 
+			: setStorageMode(StorageMode.Local);
+	}
+
 	return (
-		<div className="App">
-			<h1> Collections </h1>
+		<div>
+			
+			{/* Authentication */}
+			{/* {user ? <p> Welcome, {user?.email}! </p> : <Auth setUser={ (user: User) => setUser(user) }/>} */}
+			
+			<div className={styles.storageToggleContainer} onClick={toggleStorageMode}>
+				<h5> {StorageMode[storageMode]} Storage </h5>
+				<div className={styles.storageToggleBar}> 
+					{ storageMode == StorageMode.Local 
+						? <BsFolderFill className={styles.storageFolderIcon}/> 
+						: <BsCloudFill className={styles.storageCloudIcon} /> 
+					} 
+				</div>
+			</div>
 			<DataContext.Provider value={ LocalData }>
-
-				<CollectionSelection />
-
-				{/* <h1> From LocalData </h1>
-				<CardTable flashcards={localCards} setFlashCards={setLocalCards}/>
-				<FlashCardComposeForm 
-				fields={[
-					{name: "Prompt", value: newLocalCardPrompt, type:"text", handleChange:(value:string)=>{setNewLocalCardPrompt(value)}},
-					{name: "Answer", value: newLocalCardAnswer, type:"text", handleChange:(value:string)=>{setLocalNewCardAnswer(value)}}
-				]}
-				onSubmit={(e: React.FormEvent<HTMLFormElement>, dataContext: IDataContext) => {
-					e.preventDefault(); 
-					const formElements = e.currentTarget.elements as any;
-					const card = new Flashcard(formElements.Prompt.value, formElements.Answer.value);
-					dataContext?.create(card).then(card => setLocalCards([card, ...localCards]));
-					
-					setNewLocalCardPrompt('');
-					setLocalNewCardAnswer('');
-
-					formElements.Prompt.focus();
-				}}
-				/> */}
+			{
+				'user' && <section>
+					<CollectionSelection />
+				</section>
+			}
 			</DataContext.Provider>
-			{/* <DataContext.Provider value={ FirebaseData }>
-				<h1> From Firebase </h1>
-				<CardTable flashcards={dbCards} setFlashCards={setdbCards}/>
-				<FlashCardComposeForm 
-				fields={[
-					{name: "Prompt", value: newDbCardPrompt, type:"text", handleChange:(value:string)=>{setDbNewCardPrompt(value)}},
-					{name: "Answer", value: newDbCardAnswer, type:"text", handleChange:(value:string)=>{setDbNewCardAnswer(value)}}
-				]}
-				onSubmit={(e: React.FormEvent<HTMLFormElement>, dataContext: IDataContext) => {
-					e.preventDefault(); 
-					const formElements = e.currentTarget.elements as any;
-					const card = new Flashcard(formElements.Prompt.value, formElements.Answer.value);
-					dataContext?.create(card).then(card => setdbCards([card, ...dbCards]));
-					
-					setDbNewCardPrompt('');
-					setDbNewCardAnswer('');
-					formElements.Prompt.focus();
-				}}
-				/>
-			</DataContext.Provider> */}
 		</div>
   	)
 }

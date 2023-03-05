@@ -1,38 +1,39 @@
-import { useContext } from "react"
+import { useContext, useState, useRef } from "react"
 import { BsCheck } from 'react-icons/bs'
 
 import DataContext, { IDataContext } from "../context/DataContext"
 
 import styles from '../styles/FlashCardComposeForm.module.css'
-
-interface IField {
-    name: string
-    value: string
-    type: string
-    handleChange(value: string):any
-}
+import Flashcard from "../flashcard"
+import { ICollection } from "../collection"
 
 interface IProps {
-    fields:IField[]
-    onSubmit(form: React.FormEvent<HTMLFormElement>, dataContext: IDataContext): any
+    activeCollection: ICollection
 }
 
-export default function ({fields, onSubmit}: IProps) {
+export default function ({activeCollection}: IProps) {
     const dataContext = useContext(DataContext)
     
-    const labels = [];
-    const values = [];
+    const [prompt, setPrompt] = useState('')
+    const [answer, setAnswer] = useState('')
 
-    fields.forEach(field => {labels.push(field.name); values.push(field.value)})
+    const promptRef = useRef<HTMLLabelElement | null>(null)
+
+    const handleSubmit = (e: any) => {
+        e.preventDefault(); 
+        const card = new Flashcard(prompt, answer);
+        dataContext?.createCard(activeCollection, card).then(card => activeCollection.flashcards.push(card));
+        if (promptRef.current) promptRef.current.focus();
+    }
 
     return (
-        <form className={styles.cardForm} onSubmit={(e) => {if (dataContext) onSubmit(e, dataContext)}}>
-            {
-                fields.map( (field, index) => (<>
-                    <label style={{gridRow: 1}} key={`${index}-label-${field.name}`} htmlFor={field.name}>{field.name}: </label>
-                    <input style={{gridRow: 2}} key={`${index}-input-${field.name}`} id={field.name} type={field.type} value={field.value} onChange={(e) => field.handleChange(e.target.value)}/>
-                </>))
-            }
+        <form className={styles.cardForm} onSubmit={handleSubmit}>
+            <label ref={promptRef} style={{gridRow: 1}} htmlFor="prompt"> Prompt: </label>
+            <input style={{gridRow: 2}} id="prompt" type="text" value={prompt} onChange={(e) => setPrompt(e.target.value)}/>
+
+            <label style={{gridRow: 1}} htmlFor="answer"> Answer: </label>
+            <input style={{gridRow: 2}} id="answer" type="text" value={answer} onChange={(e) => setAnswer(e.target.value)}/>
+
             <button style={{gridColumn: 3, gridRow: 2}} type="submit"> <BsCheck /> </button>
         </form>
     )

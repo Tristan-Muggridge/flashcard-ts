@@ -1,7 +1,7 @@
 import Flashcard, { IFlashcard } from "./flashcard"
 
 export interface ICollection {
-    id?: string
+    id: string
     name: string
     flashcards: IFlashcard[]
 }

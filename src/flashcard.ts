@@ -10,6 +10,10 @@ export interface IFlashcard {
 	toJson?():IFlashcard
 }
 
+export interface IFlashcards {
+	[key: string] : Flashcard
+}
+
 class Flashcard implements IFlashcard{
 	id: string;
 	prompt: string;
@@ -19,7 +23,7 @@ class Flashcard implements IFlashcard{
 	incorrectQty: number;
 	lastReview: Date;
 	
-	constructor(prompt: string, answer: string, streak?: number, correctQty?: number, incorrectQty?: number, lastReview?: Date, id?:string) {
+	constructor(prompt: string, answer: string, id?:string, streak?: number, correctQty?: number, incorrectQty?: number, lastReview?: Date) {
         this.id = id || `${prompt}-${answer}`
 		this.prompt= prompt;
 		this.answer= answer;
@@ -47,11 +51,11 @@ class Flashcard implements IFlashcard{
     static fromJson = (obj: IFlashcard, id?:string) => new Flashcard(
         obj.prompt,
         obj.answer,
+		id ?? `${obj.prompt}-${obj.answer}`,
         obj.streak,
         obj.correctQty,
         obj.incorrectQty,
-        obj.lastReview,
-		id ?? `${obj.prompt}-${obj.answer}`
+        obj.lastReview
     )
 
 	static FirestoreConverter = {
