@@ -1,11 +1,9 @@
 import Flashcard, { IFlashcard } from "../flashcard";
-import DataContext from "../context/DataContext";
+import DataContext, {ICollections} from "../context/DataContext";
 import { useState, useContext, useEffect } from "react";
 import Collection from "./Collection";
 import collection, { ICollection } from "../collection";
 import CardTable from './CardTable';
-
-import styles from '../styles/CardTable.module.css'
 
 export default function CollectionSelection () {
     const dataContext = useContext(DataContext);
@@ -14,20 +12,37 @@ export default function CollectionSelection () {
     const [activeCollection, setActiveCollection] = useState<ICollection>();
     
     const handleSelectionClick = (c: ICollection) => setActiveCollection(c)
+    
     const handleCardModification = (cards: IFlashcard[]) => {
         if (activeCollection?.flashcards) activeCollection.flashcards = cards;
         setCollections( {...collections} )
     }
+
     const handleCreateCollection = () => {
-        const newCollection = new collection("Created Collection", [])
-        setCollections({...collections, newCollection})
-        console.debug("created a collection")
+        const created = new collection("Created Collection", [])
+        const updatedCollection = collections as ICollections;
+        updatedCollection[created.id] = created;
+        setCollections({...updatedCollection});
     }
+
+    const handleCollectionModification = (collection: ICollection) => {
+        if (!collections) return;
+        
+        const updatedCollection = collections;
+        updatedCollection[collection.id].name = collection.name;
+        setCollections( {...updatedCollection} )
+    }
+
     const handleDeleteCollection = (id: string) => {
         if (!collections || !activeCollection) return;
-        let newCollections = collections
-        delete collections[id]
-        setCollections( {...newCollections} )
+        
+        if (Object.keys(collections).length > 1) {
+            if (id == activeCollection.id) setActiveCollection( {id: "", name: "", flashcards: []} );
+            const newCollections = collections;
+            delete newCollections[id]
+            setCollections( {...newCollections} )    
+        } else setCollections({});
+
     }
 
     useEffect( () => {
@@ -47,17 +62,27 @@ export default function CollectionSelection () {
                         handleClick={handleSelectionClick}
                         handleCardModification={handleCardModification}
                         handleCollectionDeletion={handleDeleteCollection}
+                        handleCollectionModification={handleCollectionModification}
                         active={activeCollection?.id == key}
+                        key={collections[key].id}
                     />
                 : ''
                 )
             }
-            <Collection content={`New Collection +`} handleClick={()=>handleCreateCollection()} handleCardModification={handleCardModification} handleCollectionDeletion={handleDeleteCollection} active={false}/>
+
+            <Collection 
+                content={`New Collection +`} 
+                handleClick={()=>handleCreateCollection()} 
+                handleCardModification={handleCardModification} 
+                handleCollectionDeletion={handleDeleteCollection} 
+                handleCollectionModification={handleCollectionModification}
+                active={false}
+            />
         </div >
         
         <div>
         { 
-            activeCollection && 
+            collections && activeCollection && activeCollection.id && 
             <CardTable 
                 flashcards={activeCollection?.flashcards as Flashcard[]} 
                 handleCardModification={handleCardModification}

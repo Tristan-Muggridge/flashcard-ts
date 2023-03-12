@@ -30,8 +30,8 @@ Technologies Used:
 
 ### decks Functionality
 <ul>
-  <input disabled type="checkbox"/> Ability to create decks <br />
-  <input disabled type="checkbox"/> Ability to edit decks <br />
+  <input disabled type="checkbox" checked/> Ability to create decks <br />
+  <input disabled type="checkbox" checked/> Ability to edit decks <br />
   <input disabled type="checkbox" checked/> Ability to add / remove cards from a deck <br />
   <input disabled type="checkbox"/> Hide card from deck <br />
 </ul>

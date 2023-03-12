@@ -14,7 +14,7 @@ export interface IDataContext {
 	saveCollections(Collections: ICollections):void
 }
 
-interface ICollections {
+export interface ICollections {
 	[id: string]: Collection
 }
 
@@ -81,7 +81,6 @@ export const LocalData: IDataContext = {
 			output[converted.id] = converted; 
 		}
 
-		console.debug(output)
 		return output;
 	},
 	

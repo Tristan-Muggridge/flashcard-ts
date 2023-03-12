@@ -38,6 +38,11 @@
     margin: 1rem;
     position: absolute;
     opacity: 70%;
+    cursor: pointer;
+    border-radius: 10px;
+    border: transparent;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .elipses:hover {

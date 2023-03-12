@@ -4,6 +4,7 @@ import { BsFillPencilFill, BsTrash, BsX, BsXLg, BsPlusLg } from "react-icons/bs"
 import Flashcard, { IFlashcard } from "../flashcard";
 
 import styles from '../styles/CardTable.module.css'
+import EditModal from "./EditModal";
 
 interface IProps {
     flashcards: Flashcard[],
@@ -75,24 +76,10 @@ export default function ({flashcards, handleCardModification}: IProps) {
                 }
             </tbody>
         </table>
-        {
-            editing > -1 && <EditModal card={flashcards[editing]} index={editing} handleSubmit={handleUpdate} close={()=>setEditing(-1)}/>
-        }
+        
+        {editing > -1 && <EditModal initialObject={JSON.parse(JSON.stringify(flashcards[editing]))} handleSubmit={(e: Flashcard)=> handleUpdate(e, editing)} openState={()=>setEditing(-1)}/>}
+
         </>
     )
 }
 
-const EditModal = ({card, index, handleSubmit, close}: {card: IFlashcard, index: number, close():void, handleSubmit(card: IFlashcard, index: number):void}) => {    
-    return  <div className={styles.editModal}>
-        <div className={styles.close} onClick={close}> <BsX /> </div>
-        <form onSubmit={(e: any) => {e.preventDefault(); card.prompt = e.target.prompt.value; card.answer = e.target.answer.value; handleSubmit(card, index)}}>
-            <label htmlFor="prompt">Prompt</label>
-            <input type="text" id="prompt" />
-            <label htmlFor="answer">Answer</label>
-            <input type="text" id="answer" />
-            <label htmlFor="active">Active</label>
-            <input type="checkbox" id="active" />
-            <button> Save Changes </button>
-        </form>
-    </div>
-}

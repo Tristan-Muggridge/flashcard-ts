@@ -37,7 +37,6 @@ function App() {
 
 	return (
 		<div>
-			
 			{/* Authentication */}
 			{/* {user ? <p> Welcome, {user?.email}! </p> : <Auth setUser={ (user: User) => setUser(user) }/>} */}
 			
@@ -50,11 +49,14 @@ function App() {
 					} 
 				</div>
 			</div>
+
 			<DataContext.Provider value={ LocalData }>
 			{
-				'user' && <section>
-					<CollectionSelection />
-				</section>
+				'user' && 
+
+				<CollectionSelection />
+			
+				
 			}
 			</DataContext.Provider>
 		</div>
