@@ -2,13 +2,17 @@
     padding: 0.25rem 1rem;
 }
 
-.delete, .edit {
+.delete, .edit, .plus {
     cursor: pointer;
     margin: 0 0.5rem;
 }
 
 .edit:hover {
     color: orange
+}
+
+.plus:hover {
+    color: green
 }
 
 .delete:hover, .close:hover {
@@ -18,41 +22,14 @@
 .cardTable {
     width: 100%;
     border-collapse: collapse;
+    text-align: center;
+    margin: auto;
 }
 
 .cardTable tr {
     border-bottom: rgba(255, 255, 255, 0.87) 1px solid;
 }
 
-.editModal {
-    width: 800px;
-    height: 500px;
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    position: absolute;
-    top: 25%;
-    left: 50%;
-    transform: translateX(-50%);  
-
-    border: rgba(255, 255, 255, 0.87) 1px solid;
-    background-color: #242424;
-}
-
-.editModal>form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: start;
-}
-
-.close {
-    margin: 0 1rem;
-    position: absolute;
-    top: 0;
-    right: 0;
-    cursor: pointer;
-    font-size: xx-large;
+.cardTable td {
+    margin: auto;
 }

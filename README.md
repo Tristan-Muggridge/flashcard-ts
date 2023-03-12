@@ -9,37 +9,44 @@ Technologies Used:
 - TypeScript
 - Vitest (Vite Test)
 
-Milestones:
+# Goals:
 
 ### User Generated Cards
-- [x] be able to create cards
-- [x] be able to store cards
-- [x] be able to retrieve stored cards
-- [x] be able to update cards (so far only prompt / answer)
-
-![update operations](https://user-images.githubusercontent.com/89533155/219385485-a6149af0-d258-40b5-9541-52daff419524.gif)
+<ul>
+  <input disabled type="checkbox" checked /> be able to create cards <br />
+  <input disabled type="checkbox" checked /> be able to store cards <br />
+  <input disabled type="checkbox" checked /> be able to retrieve stored cards <br />
+  <input disabled type="checkbox" checked /> be able to update cards (so far only prompt / answer) <br />
+</ul>
 
 ### Quiz Time
-  - honour system (select from 1-5 how well information could be retrieved)
-  - input system (allow user input on prompt and determine if user was correct, wrong, or close)
-  - multiple choice (Present a range of other card answers and allow user to attempt selecting the matching answer to displayed prompt)
-  - update relevant card objects upon finishing review of specific card
-  
-### decks Functionality
-  - Decks UI (WIP)
-  - Ability to create decks
-  - Ability to add / remove cards from a deck
-  - Hide card from deck
+<ul>
+  <input disabled type="checkbox"/> honour system (select from 1-5 how well information could be retrieved) <br />
+  <input disabled type="checkbox"/> input system (allow user input on prompt and determine if user was correct, wrong, or close) <br />
+  <input disabled type="checkbox"/> multiple choice (Present a range of other card answers and allow user to attempt selecting the matching answer to displayed prompt) <br />
+  <input disabled type="checkbox"/> update relevant card objects upon finishing review of specific card <br />  
+</ul>
 
-  ![collections wip](https://user-images.githubusercontent.com/89533155/219688829-6ef4d426-0318-43e6-9799-1f6926dc7d02.gif)
+
+### decks Functionality
+<ul>
+  <input disabled type="checkbox" checked/> Ability to create decks <br />
+  <input disabled type="checkbox" checked/> Ability to edit decks <br />
+  <input disabled type="checkbox" checked/> Ability to add / remove cards from a deck <br />
+  <input disabled type="checkbox"/> Hide card from deck <br />
+</ul>
 
 ### Data Management Options
-- Import CSV: Import a CSV of card data into a collection of cards
-- Export CSV: Export a collection of cards to comma delimited CSV
-- Migrate to Cloud: Transfer all LocalStorage cards to Firestore
-- Make it Rain: Transfer all User Firestore data to LocalStorage
-- Sync: keep LocalStorage and Firestore in sync with each other (user-toggle) 
-    
+<ul>
+  <input disabled type="checkbox" checked/> Import CSV: Import a CSV of card data into a collection of cards  <br />
+  <input disabled type="checkbox" checked/> Export CSV: Export a collection of cards to comma delimited CSV   <br />
+  <input disabled type="checkbox"/> Migrate to Cloud: Transfer all LocalStorage cards to Firestore  <br />
+  <input disabled type="checkbox"/> Make it Rain: Transfer all User Firestore data to LocalStorage  <br />
+  <input disabled type="checkbox"/> Sync: keep LocalStorage and Firestore in sync with each other (user-toggle)   <br />
+</ul>   
+
 ### User Authentication
-  - Implement fireauth to get auth working with application so that I can open app to users
-  - tweaks to data processes to utilise user Id in the CRUD processes.
+<ul>
+  <input disabled type="checkbox" checked/> Implement fireauth to get auth working with application so that I can open app to users   <br />
+  <input disabled type="checkbox"/> tweaks to data processes to utilise user Id in the CRUD processes.  <br />
+</ul>   

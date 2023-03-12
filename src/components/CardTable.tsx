@@ -1,41 +1,45 @@
-import { useEffect, useContext, useState } from "react";
-import {BsFillPencilFill, BsTrash, BsX} from "react-icons/bs"
+import { useContext, useState, useRef } from "react";
+import { BsFillPencilFill, BsTrash, BsX, BsXLg, BsPlusLg } from "react-icons/bs"
 
 import Flashcard, { IFlashcard } from "../flashcard";
-import DataContext from "../context/DataContext";
 
 import styles from '../styles/CardTable.module.css'
+import EditModal from "./EditModal";
 
 interface IProps {
     flashcards: Flashcard[],
-    setFlashCards(flashcards: Flashcard[]):any
+    handleCardModification(card: IFlashcard[]):any
 }
 
-export default function ({flashcards, setFlashCards}: IProps) {
+export default function ({flashcards, handleCardModification}: IProps) {
 
-    const dataContext = useContext(DataContext);
+    const [newPrompt, setNewPrompt] = useState('');
+    const [newAnswer, setNewAnswer] = useState('');
 
     const [editing, setEditing] = useState(-1);
 
-    const handleDeletion = (card: Flashcard, index: number) => {
-        dataContext?.deleteCard(card); 
-        const updatedCards = flashcards
+    const newPromptInputRef = useRef<HTMLInputElement | null>(null)
+
+    const handlePlusOnClick = () => {
+        handleCardModification( [...flashcards, new Flashcard(newPrompt, newAnswer)])
+        setNewAnswer('');
+        setNewPrompt('');
+        newPromptInputRef.current?.focus();
+    }
+
+    const handleDeletionOnClick = (card: Flashcard, index: number) => {
+        const updatedCards = flashcards;
         updatedCards.splice(index, 1);
-        setFlashCards([...updatedCards])
+        handleCardModification(updatedCards);
     }
 
     const handleUpdate = (card: Flashcard, index: number) => {
         const updatedCards = flashcards
-        updatedCards[index].correctQty++;;
-        dataContext?.updateCard(card, index); 
-        setFlashCards([...updatedCards])
+        updatedCards[index] = card
+        handleCardModification(updatedCards)
         setEditing(-1);
     }
-
-    useEffect( () => {
-        dataContext?.getAllFlashcards().then(data => setFlashCards(data))
-    }, [])
-
+    
     return (
         <>
         <table className={styles.cardTable}>
@@ -44,42 +48,38 @@ export default function ({flashcards, setFlashCards}: IProps) {
                     <th>Prompt</th>
                     <th>Answer</th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
+                <tr> 
+                    <td> <input ref={newPromptInputRef} onKeyDown={e=> e.key == "Enter" ? handlePlusOnClick() : '' } type="text" name="new-card-prompt" id="new-card-prompt" placeholder="new prompt..." value={newPrompt} onChange={e => setNewPrompt(e.target.value)}/> </td>
+                    <td> <input onKeyDown={e=> e.key == "Enter" ? handlePlusOnClick() : '' } type="text" name="new-card-answer" id="new-card-answer" placeholder="new answer..." value={newAnswer} onChange={e => setNewAnswer(e.target.value)}/> </td>
+                    <td> 
+                        <span className={styles.plus} onClick={() => handlePlusOnClick() }> <BsPlusLg/> </span>
+                        <span className={styles.delete} onClick={() => {setNewAnswer(''); setNewPrompt('')}}> <BsXLg/> </span> 
+                    </td> 
+                </tr>
+
                 {
                     flashcards.map((card, index) => card.prompt && card.answer && 
                     <tr key={card.id}> 
                         <td>{card.prompt}</td>
                         <td>{card.answer}</td> 
                         <td> 
-                            <span className={styles.edit} onClick={() => /*handleUpdate(card, index)*/ setEditing(index) }> <BsFillPencilFill/> </span>
-                            <span className={styles.delete} onClick={() => handleDeletion(card, index)}> <BsTrash/> </span> 
-                        </td> 
+                            <span className={styles.edit} onClick={() => setEditing(index) }> <BsFillPencilFill/> </span>
+                            <span className={styles.delete} onClick={() => handleDeletionOnClick(card, index)}> <BsTrash/> </span> 
+                        </td>
+                        
                     </tr>
                     )
                 }
             </tbody>
         </table>
+        
+        {editing > -1 && <EditModal initialObject={JSON.parse(JSON.stringify(flashcards[editing]))} handleSubmit={(e: Flashcard)=> handleUpdate(e, editing)} openState={()=>setEditing(-1)}/>}
 
-        {
-            editing > -1 && <EditModal card={flashcards[editing]} index={editing} handleSubmit={handleUpdate} close={()=>setEditing(-1)}/>
-        }
         </>
     )
 }
 
-const EditModal = ({card, index, handleSubmit, close}: {card: IFlashcard, index: number, close():void, handleSubmit(card: IFlashcard, index: number):void}) => {
-    return <div className={styles.editModal}>
-            <div className={styles.close} onClick={close}> <BsX /> </div>
-        <form onSubmit={(e: any) => {e.preventDefault(); card.prompt = e.target.prompt.value; card.answer = e.target.answer.value; handleSubmit(card, index)}}>
-            <label htmlFor="prompt">Prompt</label>
-            <input type="text" id="prompt" />
-            <label htmlFor="answer">Answer</label>
-            <input type="text" id="answer" />
-            <label htmlFor="active">Active</label>
-            <input type="checkbox" id="active" />
-            <button> Save Changes </button>
-        </form>
-    </div>
-}
