@@ -6,6 +6,7 @@ export interface IFlashcard {
 	correctQty: number;
 	incorrectQty: number;
 	lastReview: Date;
+	nextReview: Date;
 
 	toJson?():IFlashcard
 }
@@ -22,8 +23,11 @@ class Flashcard implements IFlashcard{
 	correctQty: number;
 	incorrectQty: number;
 	lastReview: Date;
+	nextReview: Date;
 	
-	constructor(prompt: string, answer: string, id?:string, streak?: number, correctQty?: number, incorrectQty?: number, lastReview?: Date) {
+	static hoursInterval = 1;
+
+	constructor(prompt: string, answer: string, id?:string, streak?: number, correctQty?: number, incorrectQty?: number, lastReview?: Date, nextReview?: Date) {
         this.id = id || `${prompt}-${answer}`
 		this.prompt= prompt;
 		this.answer= answer;
@@ -31,6 +35,7 @@ class Flashcard implements IFlashcard{
 		this.correctQty= correctQty || 0;
 		this.incorrectQty= incorrectQty || 0;
 		this.lastReview= lastReview || new Date();
+		this.nextReview= nextReview || new Date();
 	}
 
 	toJson = () => {
@@ -41,12 +46,40 @@ class Flashcard implements IFlashcard{
 			streak: this.streak,
 			correctQty: this.correctQty,
 			incorrectQty: this.incorrectQty,
-			lastReview: this.lastReview
+			lastReview: this.lastReview,
+			nextReview: this.nextReview
 		}
 		return output;
 	}
 
-	updateLastReviewed = (date: Date) => this.lastReview = date;
+	reviewDates = (lastReview: Date, nextReview: Date) => {
+		this.lastReview = lastReview;
+		this.nextReview = nextReview;
+	}
+
+	answeredCorrectly = () => {
+		const now = new Date();
+		const nextReview = now;
+		nextReview.setHours( nextReview.getHours() + Flashcard.hoursInterval );
+		nextReview.setSeconds( nextReview.getSeconds() - 10 )
+
+		this.reviewDates(now, nextReview);
+		this.correctQty++;
+		this.streak++;
+
+		console.debug(this.nextReview)
+	}
+
+	answeredIncorrectly = () => {
+		const now = new Date();
+		const nextReview = now;
+		nextReview.setSeconds( nextReview.getSeconds() - 10 )
+
+		this.reviewDates(now, nextReview);
+		this.incorrectQty++;
+		this.streak = 0;
+	}
+
 
     static fromJson = (obj: IFlashcard, id?:string) => new Flashcard(
         obj.prompt,
@@ -55,7 +88,8 @@ class Flashcard implements IFlashcard{
         obj.streak,
         obj.correctQty,
         obj.incorrectQty,
-        obj.lastReview
+        obj.lastReview,
+		obj.nextReview
     )
 
 	static FirestoreConverter = {

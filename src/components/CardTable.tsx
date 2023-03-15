@@ -1,43 +1,57 @@
-import { useContext, useState, useRef } from "react";
+import DataContext, { ICollections } from "../context/DataContext";
+import { useContext, useState, useRef, useEffect } from "react";
 import { BsFillPencilFill, BsTrash, BsX, BsXLg, BsPlusLg } from "react-icons/bs"
+import Collection from "../collection";
 
-import Flashcard, { IFlashcard } from "../flashcard";
-
-import styles from '../styles/CardTable.module.css'
+import Flashcard from "../flashcard";
 import EditModal from "./EditModal";
 
+import styles from '../styles/CardTable.module.css'
+
 interface IProps {
-    flashcards: Flashcard[],
-    handleCardModification(card: IFlashcard[]):any
+    collection: Collection,
+    setCollections(collection: ICollections):void,
+    handleCardModification(card: Collection):any
 }
 
-export default function ({flashcards, handleCardModification}: IProps) {
+export default function ({collection, handleCardModification}: IProps) {
+
+    const dataContext = useContext(DataContext);
 
     const [newPrompt, setNewPrompt] = useState('');
     const [newAnswer, setNewAnswer] = useState('');
-
     const [editing, setEditing] = useState(-1);
 
     const newPromptInputRef = useRef<HTMLInputElement | null>(null)
 
+    const saveChanges = (collection: Collection) => {
+        handleCardModification(collection)
+        dataContext?.saveCollection(collection);
+    }
+
     const handlePlusOnClick = () => {
-        handleCardModification( [...flashcards, new Flashcard(newPrompt, newAnswer)])
+        collection.flashcards = [...collection.flashcards, new Flashcard(newPrompt, newAnswer)]
         setNewAnswer('');
         setNewPrompt('');
         newPromptInputRef.current?.focus();
+
     }
 
-    const handleDeletionOnClick = (card: Flashcard, index: number) => {
-        const updatedCards = flashcards;
+    const handleDeletionOnClick = (index: number) => {
+        const updatedCards = collection.flashcards;
         updatedCards.splice(index, 1);
-        handleCardModification(updatedCards);
+
+        collection.flashcards = updatedCards;
+        saveChanges(collection)
     }
 
     const handleUpdate = (card: Flashcard, index: number) => {
-        const updatedCards = flashcards
-        updatedCards[index] = card
-        handleCardModification(updatedCards)
+        const updatedCards = collection.flashcards;
+        updatedCards[index] = card;
         setEditing(-1);
+
+        collection.flashcards = updatedCards;
+        saveChanges(collection)
     }
     
     return (
@@ -62,13 +76,13 @@ export default function ({flashcards, handleCardModification}: IProps) {
                 </tr>
 
                 {
-                    flashcards.map((card, index) => card.prompt && card.answer && 
+                    collection.flashcards.map((card, index) => card.prompt && card.answer && 
                     <tr key={card.id}> 
                         <td>{card.prompt}</td>
                         <td>{card.answer}</td> 
                         <td> 
                             <span className={styles.edit} onClick={() => setEditing(index) }> <BsFillPencilFill/> </span>
-                            <span className={styles.delete} onClick={() => handleDeletionOnClick(card, index)}> <BsTrash/> </span> 
+                            <span className={styles.delete} onClick={() => handleDeletionOnClick(index)}> <BsTrash/> </span> 
                         </td>
                         
                     </tr>
@@ -77,7 +91,7 @@ export default function ({flashcards, handleCardModification}: IProps) {
             </tbody>
         </table>
         
-        {editing > -1 && <EditModal initialObject={JSON.parse(JSON.stringify(flashcards[editing]))} handleSubmit={(e: Flashcard)=> handleUpdate(e, editing)} openState={()=>setEditing(-1)}/>}
+        {editing > -1 && <EditModal initialObject={JSON.parse(JSON.stringify(collection.flashcards[editing]))} handleSubmit={(e: Flashcard)=> handleUpdate(e, editing)} openState={()=>setEditing(-1)}/>}
 
         </>
     )

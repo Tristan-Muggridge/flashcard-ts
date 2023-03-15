@@ -3,15 +3,15 @@ import Flashcard, { IFlashcard } from "./flashcard"
 export interface ICollection {
     id: string
     name: string
-    flashcards: IFlashcard[]
+    flashcards: Flashcard[]
 }
 
 export default class Collection implements ICollection {
     id: string
     name: string
-    flashcards: IFlashcard[]
+    flashcards: Flashcard[]
 
-    constructor(name: string, flashcards: IFlashcard[], id?:string) {
+    constructor(name: string, flashcards: Flashcard[], id?:string) {
         this.id = id ?? crypto.randomUUID()
         this.name = name;
         this.flashcards = flashcards;

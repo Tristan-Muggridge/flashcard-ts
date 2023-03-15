@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {BsThreeDots} from 'react-icons/bs'
+import {BsThreeDots, BsPlusLg} from 'react-icons/bs'
 import { ICollection } from '../collection';
 import styles from '../styles//Collection.module.css'
 import Flashcard, { IFlashcard } from '../flashcard';
@@ -8,12 +8,12 @@ import EditModal from './EditModal';
 interface IProps {
     collection: ICollection, 
     setEditing(editing: boolean):void
-    handleCardModification(card: IFlashcard[]):any, 
+    handleCardImport(collection: ICollection):void, 
     toggleVisibility(): any,
     handleCollectionDeletion(id: any):any
     handleCollectionModification(collection: ICollection):void, 
 }
-const ContextMenu = ({collection, setEditing, handleCardModification, toggleVisibility, handleCollectionDeletion, handleCollectionModification}: IProps) => {
+const ContextMenu = ({collection, setEditing, handleCardImport, toggleVisibility, handleCollectionDeletion}: IProps) => {
     
     const importButtonRef = useRef<HTMLInputElement | null>(null)
 
@@ -24,7 +24,7 @@ const ContextMenu = ({collection, setEditing, handleCardModification, toggleVisi
                     const text = (e.target.result) 
         
                     const splitText = text.split(",");
-                    const cards: IFlashcard[] = [];
+                    const cards: Flashcard[] = [];
         
                     let rows = 0;
         
@@ -35,8 +35,10 @@ const ContextMenu = ({collection, setEditing, handleCardModification, toggleVisi
                         if (rows > 0 && !matches) cards.push( new Flashcard(prompt, answer, id.split('\r\n')[1], streak, correctQty, incorrectQty, new Date(lastReview)) )
                         rows++;
                     }
-        
-                    handleCardModification( [...collection.flashcards, ...cards] )
+                    
+                    const updatedCollection = collection;
+                    updatedCollection.flashcards = [...collection.flashcards, ...cards] 
+                    handleCardImport( updatedCollection );
                 }
             return output;
         };
@@ -49,11 +51,11 @@ const ContextMenu = ({collection, setEditing, handleCardModification, toggleVisi
 
     const handleCSVExport = () => {
 
-        let cards = collection.flashcards.map(card => 
+        const cards = collection.flashcards.map(card => 
             `${card.id},${card.prompt},${card.answer},${card.streak},${card.correctQty},${card.incorrectQty},${card.lastReview},`
         ).join("\n")
 
-        let csvContent = `data:text/csv;charset=utf-8,\nid,prompt,answer,streak,correctQty,incorrectQty,lastReview,\n${cards}`
+        const csvContent = `data:text/csv;charset=utf-8,\nid,prompt,answer,streak,correctQty,incorrectQty,lastReview,\n${cards}`
         const encoded = encodeURI(csvContent)
 
         const link = document.createElement('a');
@@ -66,13 +68,37 @@ const ContextMenu = ({collection, setEditing, handleCardModification, toggleVisi
         toggleVisibility();
     }
 
+    const handleEditOnClick = () => {
+        setEditing(true); 
+        toggleVisibility();
+    }
+
+    const handleDelete = () => {
+        handleCollectionDeletion(collection.id); 
+        toggleVisibility();
+    }
+
+    const handleImportClick = () => {
+        importButtonRef.current?.click()
+    }
+
     return (
         <div className={styles.contextMenu}>
             <ul>
-                <li onClick={()=> { setEditing(true); toggleVisibility(); } }>Edit</li>
-                <li onClick={()=> { handleCollectionDeletion(collection.id); toggleVisibility(); }}>Delete</li>
-                <li onClick={handleCSVExport}>Export CSV</li>
-                <li onClick={()=> importButtonRef.current?.click()}> <input multiple ref={importButtonRef} onChange={handleCSVImport} style={{display: "none"}} type="file" name="csv" id="" /> Import CSV </li>
+                <li onClick={handleEditOnClick}>Edit </li>
+                <li onClick={handleDelete}>Delete </li>
+                <li onClick={handleCSVExport}>Export CSV </li>
+                <li onClick={handleImportClick}> 
+                    <input 
+                        multiple 
+                        ref={importButtonRef} 
+                        onChange={handleCSVImport} 
+                        style={{display: "none"}} 
+                        type="file" 
+                        name="csv" 
+                        id="" 
+                    /> Import CSV 
+                </li>
             </ul>
         </div>
     )
@@ -82,48 +108,55 @@ interface mainProps {
     collection?: ICollection, 
     content: any, 
     handleClick:any, 
-    handleCardModification(card: IFlashcard[]):any, 
-    handleCollectionDeletion(id:any):void, 
+    handleCardImport(collection: ICollection):void, 
+    handleCollectionDeletion(id:string):void, 
     handleCollectionModification(collection: ICollection):void, 
-    active:boolean
 }
 
-export default function ({collection, content, handleClick, handleCardModification, handleCollectionDeletion, handleCollectionModification, active}: mainProps) {
+export default function ({collection, content, handleClick, handleCardImport, handleCollectionDeletion, handleCollectionModification}: mainProps) {
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [editing, setEditing] = useState(false);
 
     return (
         <>
-        <div className={`${styles.collection} ${active ? styles.active : ''}`} onClick={()=>handleClick(collection)}>
-        {
-            collection ? 
-            <div onClick={() => handleClick()}>
-                <button className={styles.elipses} onFocus={()=>setShowContextMenu(true)}> <i><BsThreeDots /></i> </button>
-                { 
-                showContextMenu && 
-                    <ContextMenu 
-                        collection={collection} 
-                        setEditing={()=> {setEditing(true); console.debug(editing)}}
-                        handleCardModification={handleCardModification} 
-                        toggleVisibility={()=> setShowContextMenu(!showContextMenu)} 
-                        handleCollectionDeletion={handleCollectionDeletion}
-                        handleCollectionModification={handleCollectionModification}
-                    /> 
-                }
+            <div className={styles.collection} onClick={()=>handleClick(collection)}>
+            {
+                collection ? 
+                <div onClick={() => handleClick()}>
+                    <button className={styles.elipses} onFocus={()=>setShowContextMenu(true)}> <i><BsThreeDots /></i> </button>
+                    { showContextMenu && 
+                        <ContextMenu 
+                            collection={collection} 
+                            setEditing={()=> {setEditing(true); console.debug(editing)}}
+                            handleCardImport={handleCardImport} 
+                            toggleVisibility={()=> setShowContextMenu(!showContextMenu)} 
+                            handleCollectionDeletion={handleCollectionDeletion}
+                            handleCollectionModification={handleCollectionModification}
+                        /> 
+                    }
 
-                <h5> {content} </h5>
-                {
-                    collection && collection.flashcards.length > 0 &&
-                    <div className={styles.preview} style={{zIndex: -1}} />
-                }
-                
+                    <h5> {content} </h5>
+                    {
+                        collection && collection.flashcards.length > 0 &&
+                        <div className={styles.preview} style={{zIndex: -1}} />
+                    }
+                    
+                </div>
+                :  <div><h5> {content} </h5></div>
+            }
+                <div className={styles.rear}> </div>
             </div>
-            :  <div><h5> {content} </h5></div>
-        }
+
+            {collection && editing && <EditModal initialObject={JSON.parse(JSON.stringify(collection))} handleSubmit={(e: ICollection)=> handleCollectionModification(e)} openState={()=>setEditing(false)}/>}
+        </>
+    )
+}
+
+export function CollectionPlaceHolder({handleClick}: {handleClick():void}) {
+    return (
+        <div className={styles.collection} onClick={handleClick}>
+            <BsPlusLg style={{margin: "auto"}} size={20}/>
             <div className={styles.rear}> </div>
         </div>
-
-        {collection && editing && <EditModal initialObject={JSON.parse(JSON.stringify(collection))} handleSubmit={(e: ICollection)=> handleCollectionModification(e)} openState={()=>setEditing(false)}/>}
-        </>
     )
 }

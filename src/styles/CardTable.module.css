@@ -8,15 +8,15 @@
 }
 
 .edit:hover {
-    color: orange
+    color: var(--bg-blue)
 }
 
 .plus:hover {
-    color: green
+    color: var(--bg-green)
 }
 
 .delete:hover, .close:hover {
-    color: red;
+    color: var(--bg-red);
 }
 
 .cardTable {
@@ -27,7 +27,7 @@
 }
 
 .cardTable tr {
-    border-bottom: rgba(255, 255, 255, 0.87) 1px solid;
+    border-bottom: var(--bg-500) 1px solid;
 }
 
 .cardTable td {

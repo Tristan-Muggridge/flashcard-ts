@@ -12,6 +12,7 @@ export interface IDataContext {
 
 	loadCollections(): ICollections
 	saveCollections(Collections: ICollections):void
+	saveCollection(Collection: ICollection):void
 }
 
 export interface ICollections {
@@ -63,10 +64,15 @@ export const FirebaseData: IDataContext = {
 		const output: ICollections = {}
 		return output;
 	},
+
+	saveCollection: () => {
+
+	},
 }
 
 export const LocalData: IDataContext = {
 	saveCollections: (collections: ICollections) => {
+		if (!collections) return;
 		localStorage.setItem("collection-test", JSON.stringify(collections))
 	},
 
@@ -83,7 +89,13 @@ export const LocalData: IDataContext = {
 
 		return output;
 	},
-	
+
+	saveCollection: (collection: ICollection) => {
+		const collections = LocalData.loadCollections();
+		collections[collection.id] = collection;
+		LocalData.saveCollections(collections);
+	},
+
 	createCard: async (collection: ICollection, card: Flashcard) => new Promise(resolve => {
 		let tmp = LocalData.loadCollections()
 		tmp[collection.id].flashcards.push(card)

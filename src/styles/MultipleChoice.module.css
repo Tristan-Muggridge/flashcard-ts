@@ -1,0 +1,38 @@
+.multipleChoice {
+    text-align: center;
+    margin: 0 auto;
+    max-width: var(--max-width);
+    width: 100%;
+    outline: transparent;
+}
+
+.multipleChoice h5 {
+    font-size: 2rem;
+}
+
+.choicesGrid {
+    display: grid;
+    max-width: var(--max-width);
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.choice {
+    padding: 0.5rem;
+    margin: 0.5rem;
+    cursor: pointer;
+
+    border-radius: 10px;
+    background-color: var(--bg-600);
+}
+
+.choice:hover {
+    outline: 1px solid var(--bg-400);
+}
+
+.correct {
+    background-color: var(--bg-green);
+}
+
+.incorrect {
+    background-color: var(--bg-red);
+}
