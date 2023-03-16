@@ -13,29 +13,33 @@ export interface ICollections {
 	[id: string]: Collection
 }
 
+const ICollectionsConverter = {
+	toFirestore: (collections: ICollections) => {
+		const output:any = {};
+
+		Object.keys(collections).forEach(collection => {
+			output[collection] = Collection.toJson(collections[collection])
+		});
+
+		return output;
+	},
+	fromFirestore: (snapshot: any, options: any) => {
+		const data = snapshot.data(options);
+		return data
+	}
+}
+
 export const FirebaseData: IDataContext = {
 	loadCollections: async (): Promise<ICollections> => {
-		const docRef = doc(db, "test-user", "collections");
-		const docSnap = await getDoc(docRef);
-
-		// console.debug(Collection.fromJson(JSON.parse(docSnap.data()));)
-		console.debug(docSnap.data());
-
-		docSnap.data()
-
-		return {}
+		const ref = doc(db, "test-user", "collections").withConverter(ICollectionsConverter);
+		const docSnap = await getDoc(ref);
+		return docSnap.data()
 	},
 	
-	saveCollections: function (collections: ICollections): void {
-		const output: {[key: string] : string} = {}
-		Object.keys(collections).forEach(key => {
-			if (collections[key]) output[key] = JSON.stringify(collections[key]);
-		})
-
-		console.debug(output)
-
+	saveCollections: (collections: ICollections) => {
 		const sendToFirebase = async () => {
-			await setDoc(doc(db, "test-user", "collections"), output);	
+			const ref = doc(db, "test-user", "collections").withConverter(ICollectionsConverter);
+			await setDoc(ref, collections);
 		} 
 
 		sendToFirebase();

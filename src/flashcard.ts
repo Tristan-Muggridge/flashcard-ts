@@ -38,20 +38,6 @@ class Flashcard implements IFlashcard{
 		this.nextReview= nextReview || new Date();
 	}
 
-	toJson = () => {
-		const output: IFlashcard = {
-			id: this.id,
-			prompt: this.prompt,
-			answer: this.answer,
-			streak: this.streak,
-			correctQty: this.correctQty,
-			incorrectQty: this.incorrectQty,
-			lastReview: this.lastReview,
-			nextReview: this.nextReview
-		}
-		return output;
-	}
-
 	reviewDates = (lastReview: Date, nextReview: Date) => {
 		this.lastReview = lastReview;
 		this.nextReview = nextReview;
@@ -80,6 +66,19 @@ class Flashcard implements IFlashcard{
 		this.streak = 0;
 	}
 
+	static toJson = (card: IFlashcard) => {
+		const output: IFlashcard = {
+			id: card.id,
+			prompt: card.prompt,
+			answer: card.answer,
+			streak: card.streak,
+			correctQty: card.correctQty,
+			incorrectQty: card.incorrectQty,
+			lastReview: card.lastReview,
+			nextReview: card.nextReview
+		}
+		return output;
+	}
 
     static fromJson = (obj: IFlashcard, id?:string) => new Flashcard(
         obj.prompt,
@@ -94,7 +93,7 @@ class Flashcard implements IFlashcard{
 
 	static FirestoreConverter = {
 		toFirestore: (card: Flashcard) => {
-			return card.toJson();
+			return Flashcard.toJson(card);
 		},
 		fromFirestore: (snapshot: any, options: any) => {
 			const data = snapshot.data(options)

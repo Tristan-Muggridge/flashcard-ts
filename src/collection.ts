@@ -3,15 +3,14 @@ import Flashcard, { IFlashcard } from "./flashcard"
 export interface ICollection {
     id: string
     name: string
-    flashcards: Flashcard[]
+    flashcards: IFlashcard[]
 
-    toJson?():ICollection
 }
 
 export default class Collection implements ICollection {
     id: string
     name: string
-    flashcards: Flashcard[]
+    flashcards: IFlashcard[]
 
     constructor(name: string, flashcards: Flashcard[], id?:string) {
         this.id = id ?? crypto.randomUUID()
@@ -27,18 +26,18 @@ export default class Collection implements ICollection {
         )
     }
 
-    toJson = () => {
-        const output: ICollection = {
-            id: this.id,
-            name: this.name,
-            flashcards: this.flashcards
+    static toJson = (obj: Collection) => {
+        const output = {
+            id: obj.id,
+            name: obj.name,
+            flashcards: obj.flashcards.map(card => Flashcard.toJson(card))
         }
 		return output;
     }
 
     static FirestoreConverter = {
 		toFirestore: (collection: Collection) => {
-			return collection.toJson();
+			return Collection.toJson(collection);
 		},
 		fromFirestore: (snapshot: any, options: any) => {
 			const data = snapshot.data(options)

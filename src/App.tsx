@@ -51,6 +51,7 @@ function App() {
 		storageMode == StorageMode.Local 
 			? setStorageMode(StorageMode.Cloud) 
 			: setStorageMode(StorageMode.Local);
+		setActive(false);
 	}
 
 	return (
@@ -74,44 +75,46 @@ function App() {
 				} 
 				</div>
 			</div>
+			
+			{/* <DataContext.Provider value={user}> */}
+				<DataContext.Provider value={ storageMode == StorageMode.Local ? LocalData : FirebaseData }>
+					<section>
+						<Collections
+							activeCollection={activeCollection as ICollection}
+							setActiveCollection={(collection: Collection)=>setActiveCollection(collection)}
+							setActive={(b)=>setActive(b)} 
+							storageMode={storageMode} />
+					</section>
+					
+					<section>
+					
+						<span>
+							<button onClick={()=>setMode(Mode.Browser)}>Browser</button>
+							<button onClick={()=>setMode(Mode.Quiz)}>Review</button>
+						</span>
 
-			<DataContext.Provider value={ storageMode == StorageMode.Local ? LocalData : FirebaseData }>
-				<section>
-					<Collections
-						activeCollection={activeCollection as ICollection}
-						setActiveCollection={(collection: Collection)=>setActiveCollection(collection)}
-						setActive={(b)=>setActive(b)} 
-						storageMode={storageMode} />
-				</section>
-				
-				<section>
-				
-					<span>
-						<button onClick={()=>setMode(Mode.Browser)}>Browser</button>
-						<button onClick={()=>setMode(Mode.Quiz)}>Review</button>
-					</span>
-
-				{
-					mode == Mode.Browser 
-					? active && <>
-						<h1> {activeCollection?.name} </h1> 
-
-						<CardTable 
-							collection={activeCollection as Collection}
-							handleCollectionModification={handleCollectionModification} />
-
-					  </>
-					: activeCollection && activeCollection?.flashcards.length > 0 ?
-					<>
 					{
-						active && activeCollection && mode == Mode.Quiz && active &&
-						<Review collection={activeCollection} handleCollectionModification={handleCollectionModification}/>
-					}
-					</> : <h1> No cards to review. </h1>
-				}
-				</section>
+						mode == Mode.Browser 
+						? active && <>
+							<h1> {activeCollection?.name} </h1> 
 
-			</DataContext.Provider>
+							<CardTable 
+								collection={activeCollection as Collection}
+								handleCollectionModification={handleCollectionModification} />
+
+						</>
+						: activeCollection && activeCollection?.flashcards.length > 0 ?
+						<>
+						{
+							active && activeCollection && mode == Mode.Quiz && active &&
+							<Review collection={activeCollection} handleCollectionModification={handleCollectionModification}/>
+						}
+						</> : <h1> No cards to review. </h1>
+					}
+					</section>
+
+				</DataContext.Provider>
+			{/* </DataContext.Provider> */}
 
 		</>
   	)

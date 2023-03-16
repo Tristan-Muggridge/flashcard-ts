@@ -71,7 +71,8 @@ export default function CollectionSelection ({activeCollection, setActiveCollect
     }
 
     useEffect( () => {
-        dataContext?.saveCollections(collections ?? {});
+        if (!collections || Object.keys(collections).length == 0) return;
+        if (collections) dataContext?.saveCollections(collections);
         setCollections(collections);
     }, [collections])
 
@@ -82,9 +83,14 @@ export default function CollectionSelection ({activeCollection, setActiveCollect
         setCollections({...updated});
     }, [activeCollection])
 
-    // useEffect( () => {
-    //     setCollections(dataContext?.loadCollections() as ICollections);
-    // }, [storageMode])
+    useEffect( () => {
+        const retrieveCollections = async () => {
+            const c = await dataContext?.loadCollections() as ICollections
+            setCollections(c)
+        }
+
+        retrieveCollections();
+    }, [storageMode])
 
     return (
     <>
