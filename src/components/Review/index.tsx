@@ -7,6 +7,8 @@ import Flashcard from "../../flashcard";
 import styles from '../../styles/Review.module.css'
 
 import MultipleChoice from "./MultipleChoice";
+import InputReview from "./InputReview";
+import ConfidenceReview from "./ConfidenceReview";
 
 interface IProps {
     collection: ICollection;
@@ -48,7 +50,6 @@ export default function QuizSelector ( {collection, handleCollectionModification
 
     const [filtered, setFiltered] = useState<Flashcard[]>(collection.flashcards.filter(card => new Date(card.nextReview) < new Date()));
     const [question, setQuestion] = useState<Flashcard>(shuffle(filtered)[0])
-    const [choices, setChoices] = useState<Flashcard[]>([])
     
     const [answered, setAnswered] = useState(0);
 
@@ -74,7 +75,6 @@ export default function QuizSelector ( {collection, handleCollectionModification
         if (question.id == filtered[0].id)
         {
             const timeout = setTimeout(() => {  
-                setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])       
                 Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
                 Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)                
             }, 500);
@@ -83,11 +83,11 @@ export default function QuizSelector ( {collection, handleCollectionModification
 
     useEffect(() => {
         const timeout = setTimeout(() => {  
-            console.debug("clearing")
             if (!collection || !question) return;
-            setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])       
             Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
             Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)
+            // Array.from(document.getElementsByClassName(styles.inputReviewCorrect)).forEach(element => element.className = styles.inputReviewNeutral)
+            // Array.from(document.getElementsByClassName(styles.inputReviewInCorrect)).forEach(element => element.className = styles.inputReviewNeutral)
         }, 500);
     }, [question])
 
@@ -97,18 +97,35 @@ export default function QuizSelector ( {collection, handleCollectionModification
     
         filtered.length > 0 ? 
         <>
-            <div className={styles.heading}> <h5> Review </h5> </div>
+            <div className={styles.heading}> <h2> Review </h2> </div>
             <div className={styles.quizSelector}>
-                <button onFocus={()=>setReviewMode(ReviewModes.Multi)}> Multiple Choice </button>
-                <button onFocus={()=>setReviewMode(ReviewModes.Input)}> Input Review </button>
-                <button onFocus={()=>setReviewMode(ReviewModes.Confidence)}> Confidence Review </button>
+                <button className={reviewMode == ReviewModes.Multi ? styles.active : ''} onFocus={()=>setReviewMode(ReviewModes.Multi)}> Multiple Choice </button>
+                <button className={reviewMode == ReviewModes.Input ? styles.active : ''} onFocus={()=>setReviewMode(ReviewModes.Input)}> Input Review </button>
+                <button className={reviewMode == ReviewModes.Confidence ? styles.active : ''} onFocus={()=>setReviewMode(ReviewModes.Confidence)}> Confidence Review </button>
             </div>
     
+            {question && <div className={styles.heading}> <h3> {question.prompt} </h3> </div>}
+
             {
                 reviewMode == ReviewModes.Multi &&
                 <MultipleChoice 
                     collection={collection}
-                    choices={choices}
+                    question={question} 
+                    handleCollectionModification={saveChanges} />
+            }
+
+            {
+                reviewMode == ReviewModes.Input &&
+                <InputReview 
+                    collection={collection}
+                    question={question} 
+                    handleCollectionModification={saveChanges} />
+            }
+
+            {
+                reviewMode == ReviewModes.Confidence &&
+                <ConfidenceReview 
+                    collection={collection}
                     question={question} 
                     handleCollectionModification={saveChanges} />
             }

@@ -127,7 +127,7 @@ export default function ({collection, content, handleClick, handleCardImport, ha
             {
                 collection ? 
                 <div onClick={() => handleClick(collection)}>
-                    <button className={styles.elipses} onFocus={()=>setShowContextMenu(true)}> <i><BsThreeDots /></i> </button>
+                    <button className={styles.elipses} onClick={()=>setShowContextMenu(!showContextMenu)}> <i><BsThreeDots /></i> </button>
 
                     { showContextMenu && collection && 
                         <ContextMenu 

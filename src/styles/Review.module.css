@@ -8,16 +8,22 @@
 
 .quizSelector button {
     cursor: pointer;
-    padding: 0.125rem;
-    border-radius: 5px;
+    padding: 0.5rem;
+    border-radius: 10px;
+    border: transparent;
+}
+
+.active {
+    border: 1px solid var(--font-color) !important;
+    background-color: var(--bg-400);
 }
 
 .correct {
-    background-color: var(--bg-green);
+    background-color: var(--bg-green) !important;
 }
 
 .incorrect {
-    background-color: var(--bg-red);
+    background-color: var(--bg-red) !important;
 }
 
 .multipleChoice {
@@ -33,7 +39,7 @@
     text-align: center;
 }
 
-.heading h5 {
+.heading h3 {
     max-width: 100%;
     font-size: 2rem;
 }
@@ -51,16 +57,83 @@
 
     border-radius: 10px;
     background-color: var(--bg-600);
+    border: 1px var(--bg-400) solid;
 }
 
 .choice:hover {
-    outline: 1px solid var(--bg-400);
+    border: 1px solid var(--bg-600);
+    background-color: var(--bg-400);
 }
 
-.correct {
+
+.inputReview {
+    text-align: center;
+    margin: 0 auto;
+    max-width: var(--max-width);
+    width: 100%;
+    display: flex;
+    gap: 2rem;
+}
+
+.inputReviewNeutral {
+    padding: 0.5rem;
+    border-radius: 10px;
+    outline: 5px  white solid;
+}
+
+.inputReview label {
+    padding: 0.5rem;
+}
+
+.inputReviewCorrect {
+    outline: 5px  var(--bg-green) solid !important ;
+    outline: transparent;
+}
+
+.inputReviewInCorrect {
+    outline: 5px  var(--bg-red) solid !important ;
+    outline: transparent;
+}
+
+.ConfidenceReview {
+    width: 100%;
+    max-width: var(--max-width);
+    text-align: center;
+}
+
+.ConfidenceReview h5 {
+    max-width: 100%;
+    font-size: 1.5rem;
+}
+
+.buttonContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    height: 2rem;
+
+    width: 100%;
+    max-width: var(--max-width);
+
+}
+
+.ConfidenceReview button {
+    border: 1px solid var(--font-color);
+    cursor: pointer;
+}
+
+.again {
+    background-color: var(--bg-red);
+}
+
+.hard {
+    background-color: var(--bg-orange);
+}
+
+.good {
     background-color: var(--bg-green);
 }
 
-.incorrect {
-    background-color: var(--bg-red);
+.easy {
+    background-color: var(--bg-blue);
 }

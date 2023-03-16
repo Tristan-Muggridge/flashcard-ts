@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Flashcard from "../../flashcard"
 import { ICollection } from "../../collection";
 
@@ -6,17 +6,35 @@ import styles from '../../styles/Review.module.css'
 
 interface IProps {
     collection: ICollection;
-    choices: Flashcard[];
     question: Flashcard;
     handleCollectionModification(collection: ICollection):void
 }
 
+const shuffle = (array: Flashcard[]) => {
+    if (array.length == 0) return array;
 
-export default function MultipleChoice({collection, choices, question, handleCollectionModification}: IProps) {
-    const multipleChoiceArea = useRef<HTMLDivElement>(null);
-    const answer = useRef<HTMLDivElement>(null);
-
+    let currentIndex = array.length,  randomIndex;
     
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+    
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+    
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    
+    return array;
+}
+
+export default function MultipleChoice({collection, question, handleCollectionModification}: IProps) {
+    const multipleChoiceArea = useRef<HTMLDivElement>(null);
+    const answer = useRef<HTMLButtonElement>(null);
+
+    const [choices, setChoices] = useState<Flashcard[]>([])
 
     const handleKeyDown = (key: React.KeyboardEvent<HTMLDivElement>) => {
         switch(key.key) {
@@ -55,23 +73,26 @@ export default function MultipleChoice({collection, choices, question, handleCol
             : question.answeredIncorrectly()        
     
         handleCollectionModification(collection);
-    }
+    }   
+
+    useEffect(()=> {
+        const timeout = setTimeout(() => {  
+            setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])       
+        }, 500);
+    }, [collection])
 
     return <div className={styles.multipleChoice} ref={multipleChoiceArea} onKeyDown={handleKeyDown} tabIndex={0}>
-        <h1> Multiple Choice </h1>
         {   question &&
         <>
-            <div className={styles.heading}> <h5> { question && question.prompt } </h5> </div>
-
             <div className={styles.choicesGrid}>
                 {choices.map((card, index: number) => 
-                    <div 
+                    <button 
                         ref={ card.id == question.id ? answer : null }
                         key={card.id} 
                         className={styles.choice}
                         onClick={(e) => handleAnswer(index)}>
                         {card.answer}
-                    </div>
+                    </button>
                 )}
             </div>
         </>
