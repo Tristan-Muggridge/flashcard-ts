@@ -28,7 +28,7 @@ class Flashcard implements IFlashcard{
 	static hoursInterval = 1;
 
 	constructor(prompt: string, answer: string, id?:string, streak?: number, correctQty?: number, incorrectQty?: number, lastReview?: Date, nextReview?: Date) {
-        this.id = id || `${prompt}-${answer}`
+        this.id = id ?? crypto.randomUUID()
 		this.prompt= prompt;
 		this.answer= answer;
 		this.streak= streak || 0;
@@ -84,7 +84,7 @@ class Flashcard implements IFlashcard{
     static fromJson = (obj: IFlashcard, id?:string) => new Flashcard(
         obj.prompt,
         obj.answer,
-		id ?? `${obj.prompt}-${obj.answer}`,
+		id ?? crypto.randomUUID(),
         obj.streak,
         obj.correctQty,
         obj.incorrectQty,
