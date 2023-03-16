@@ -64,7 +64,7 @@ function App() {
 			</nav>
 
 			{/* Authentication */}
-			{/* {user ? <p> Welcome, {user?.email}! </p> : <Auth setUser={ (user: User) => setUser(user) }/>} */}
+			{user ? <p> Welcome, {user?.email}! </p> : <Auth setUser={ (user: User) => setUser(user) }/>}
 
 			<div className={styles.storageToggleContainer} onClick={toggleStorageMode}>
 				<h5> {StorageMode[storageMode]} Storage </h5>
@@ -76,10 +76,10 @@ function App() {
 				</div>
 			</div>
 			
-			{/* <DataContext.Provider value={user}> */}
 				<DataContext.Provider value={ storageMode == StorageMode.Local ? LocalData : FirebaseData }>
 					<section>
 						<Collections
+							userId={user?.uid ?? "guest"}
 							activeCollection={activeCollection as ICollection}
 							setActiveCollection={(collection: Collection)=>setActiveCollection(collection)}
 							setActive={(b)=>setActive(b)} 
@@ -114,7 +114,6 @@ function App() {
 					</section>
 
 				</DataContext.Provider>
-			{/* </DataContext.Provider> */}
 
 		</>
   	)

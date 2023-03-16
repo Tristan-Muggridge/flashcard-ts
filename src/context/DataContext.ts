@@ -5,8 +5,8 @@ import Flashcard, {IFlashcard} from "../flashcard";
 import Collection, { ICollection } from "../collection";
 
 export interface IDataContext {
-	loadCollections(): Promise<ICollections>
-	saveCollections(Collections: ICollections):void
+	loadCollections(userId: string): Promise<ICollections>
+	saveCollections(Collections: ICollections, userId: string):void
 }
 
 export interface ICollections {
@@ -30,15 +30,16 @@ const ICollectionsConverter = {
 }
 
 export const FirebaseData: IDataContext = {
-	loadCollections: async (): Promise<ICollections> => {
-		const ref = doc(db, "test-user", "collections").withConverter(ICollectionsConverter);
+	loadCollections: async (userId: string): Promise<ICollections> => {
+		const ref = doc(db, userId, "collections").withConverter(ICollectionsConverter);
 		const docSnap = await getDoc(ref);
+		
 		return docSnap.data()
 	},
 	
-	saveCollections: (collections: ICollections) => {
+	saveCollections: (collections: ICollections, userId: string) => {
 		const sendToFirebase = async () => {
-			const ref = doc(db, "test-user", "collections").withConverter(ICollectionsConverter);
+			const ref = doc(db, userId, "collections").withConverter(ICollectionsConverter);
 			await setDoc(ref, collections);
 		} 
 
@@ -47,12 +48,7 @@ export const FirebaseData: IDataContext = {
 }
 
 export const LocalData: IDataContext = {
-	saveCollections: (collections: ICollections) => {
-		if (!collections) return;
-		localStorage.setItem("collection-test", JSON.stringify(collections))
-	},
-
-	loadCollections: () => new Promise(resolve => {
+	loadCollections: (userId: string) => new Promise(resolve => {
 		const localCollections = localStorage.getItem("collection-test");
 		if (!localCollections) return {};
 
@@ -65,6 +61,11 @@ export const LocalData: IDataContext = {
 
 		resolve(output);
 	}),
+
+	saveCollections: (collections: ICollections, userId: string) => {
+		if (!collections) return;
+		localStorage.setItem("collection-test", JSON.stringify(collections))
+	}
 }
 
 export default React.createContext<IDataContext | null>(FirebaseData)

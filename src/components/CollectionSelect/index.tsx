@@ -2,6 +2,7 @@ import DataContext, {ICollections} from "../../context/DataContext";
 import { useState, useContext, useEffect } from "react";
 import Collection, { CollectionPlaceHolder } from "./Collection";
 import collection, { ICollection } from "../../collection";
+import { User } from "firebase/auth";
 
 enum StorageMode  {
 	"Local" = "Local",
@@ -9,13 +10,14 @@ enum StorageMode  {
 }
 
 interface IProps {
+    userId: string
     activeCollection: ICollection
     setActiveCollection(collection: ICollection):void
     setActive(b: boolean):void
     storageMode: StorageMode
 }
 
-export default function CollectionSelection ({activeCollection, setActiveCollection, setActive, storageMode}: IProps) {
+export default function CollectionSelection ({userId, activeCollection, setActiveCollection, setActive, storageMode}: IProps) {
     
     const dataContext = useContext(DataContext);
     const [collections, setCollections] = useState<ICollections>()
@@ -23,7 +25,7 @@ export default function CollectionSelection ({activeCollection, setActiveCollect
     useEffect( () => {
         
         const retrieveCollections = async () => {
-            const c = await dataContext?.loadCollections() as ICollections
+            const c = await dataContext?.loadCollections(userId) as ICollections
             setCollections(c)
         }
 
@@ -34,7 +36,7 @@ export default function CollectionSelection ({activeCollection, setActiveCollect
     
     const handleCreateCollection = () => {
         const created = new collection("Created Collection", [])
-        const updatedCollection = collections as ICollections;
+        const updatedCollection = collections as ICollections ?? {};
         updatedCollection[created.id] = created;
         setCollections({...updatedCollection});
     }
@@ -72,7 +74,7 @@ export default function CollectionSelection ({activeCollection, setActiveCollect
 
     useEffect( () => {
         if (!collections || Object.keys(collections).length == 0) return;
-        if (collections) dataContext?.saveCollections(collections);
+        if (collections) dataContext?.saveCollections(collections, userId);
         setCollections(collections);
     }, [collections])
 
@@ -85,7 +87,7 @@ export default function CollectionSelection ({activeCollection, setActiveCollect
 
     useEffect( () => {
         const retrieveCollections = async () => {
-            const c = await dataContext?.loadCollections() as ICollections
+            const c = await dataContext?.loadCollections(userId) as ICollections
             setCollections(c)
         }
 
