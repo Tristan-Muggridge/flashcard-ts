@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {BsThreeDots, BsPlusLg} from 'react-icons/bs'
-import { ICollection } from '../collection';
-import styles from '../styles//Collection.module.css'
-import Flashcard, { IFlashcard } from '../flashcard';
-import EditModal from './EditModal';
+import { ICollection } from '../../collection';
+import styles from '../../styles/Collection.module.css'
+import Flashcard from '../../flashcard';
+import EditModal from '../EditModal';
 
 interface IProps {
     collection: ICollection, 
@@ -13,6 +13,7 @@ interface IProps {
     handleCollectionDeletion(id: any):any
     handleCollectionModification(collection: ICollection):void, 
 }
+
 const ContextMenu = ({collection, setEditing, handleCardImport, toggleVisibility, handleCollectionDeletion}: IProps) => {
     
     const importButtonRef = useRef<HTMLInputElement | null>(null)
@@ -45,7 +46,7 @@ const ContextMenu = ({collection, setEditing, handleCardImport, toggleVisibility
         };
 
         const files = e.target.files;
-        Object.keys(files).forEach(async (file: any) => { await reader().readAsText(files[file]); console.debug(files[file])})
+        Object.keys(files).forEach(async (file: any) => await reader().readAsText(files[file]));
         
         toggleVisibility();
     }
@@ -120,6 +121,7 @@ interface mainProps {
 export default function ({collection, content, handleClick, handleCardImport, handleCollectionDeletion, handleCollectionModification}: mainProps) {
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [editing, setEditing] = useState(false);
+    const due = useMemo(()=>collection?.flashcards.filter(card => new Date(card.nextReview) < new Date()).length, [collection]);
 
     return (
         <>
@@ -127,7 +129,7 @@ export default function ({collection, content, handleClick, handleCardImport, ha
             {
                 collection ? 
                 <div onClick={() => handleClick(collection)}>
-                    <button className={styles.elipses} onFocus={()=>setShowContextMenu(true)} onBlur={()=> setTimeout(()=>setShowContextMenu(false), 100)}> <i><BsThreeDots /></i> </button>
+                    <button className={styles.elipses} onClick={()=>setShowContextMenu(!showContextMenu)}> <i><BsThreeDots /></i> </button>
 
                     { showContextMenu && collection && 
                         <ContextMenu 
@@ -140,6 +142,8 @@ export default function ({collection, content, handleClick, handleCardImport, ha
                         /> 
                     }
 
+                    { due > 0 && <div className={styles.dueAlert}> {due} </div>}
+
                     <h5> {content} </h5>
                     {
                         collection && collection.flashcards.length > 0 &&
@@ -151,9 +155,7 @@ export default function ({collection, content, handleClick, handleCardImport, ha
             }
                 <div className={styles.rear}> </div>
             </div>
-
             
-
             {collection && editing && <EditModal initialObject={JSON.parse(JSON.stringify(collection))} handleSubmit={(e: ICollection)=> handleCollectionModification(e)} openState={()=>setEditing(false)}/>}
         </>
     )

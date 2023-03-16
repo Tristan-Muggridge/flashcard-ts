@@ -1,18 +1,24 @@
-import DataContext, {ICollections} from "../context/DataContext";
+import DataContext, {ICollections} from "../../context/DataContext";
 import { useState, useContext, useEffect } from "react";
 import Collection, { CollectionPlaceHolder } from "./Collection";
-import collection, { ICollection } from "../collection";
+import collection, { ICollection } from "../../collection";
+
+enum StorageMode  {
+	"Local" = "Local",
+	"Cloud" = "Cloud"
+}
 
 interface IProps {
     activeCollection: ICollection
     setActiveCollection(collection: ICollection):void
     setActive(b: boolean):void
+    storageMode: StorageMode
 }
 
-export default function CollectionSelection ({activeCollection, setActiveCollection, setActive}: IProps) {
+export default function CollectionSelection ({activeCollection, setActiveCollection, setActive, storageMode}: IProps) {
     
     const dataContext = useContext(DataContext);
-    const [collections, setCollections] = useState(dataContext?.loadCollections() as ICollections)
+    const [collections, setCollections] = useState( dataContext?.loadCollections() as ICollections)
     
     const handleSelectionClick = (c: ICollection) => {setActiveCollection({...c}); setActive(true)}
     
@@ -55,7 +61,6 @@ export default function CollectionSelection ({activeCollection, setActiveCollect
     }
 
     useEffect( () => {
-        console.debug("collections", collections)
         dataContext?.saveCollections(collections ?? {});
         setCollections(collections);
     }, [collections])
@@ -63,11 +68,13 @@ export default function CollectionSelection ({activeCollection, setActiveCollect
     useEffect( () => {
         if (!activeCollection) return;
         const updated = collections;
-        updated[activeCollection.id] = activeCollection
+        updated[activeCollection.id] = activeCollection as collection
         setCollections({...updated});
     }, [activeCollection])
 
-    useEffect(()=> setCollections(dataContext?.loadCollections() as ICollections), [])
+    // useEffect( () => {
+    //     setCollections(dataContext?.loadCollections() as ICollections);
+    // }, [storageMode])
 
     return (
     <>

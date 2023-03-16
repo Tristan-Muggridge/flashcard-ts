@@ -3,15 +3,14 @@ import DataContext, { FirebaseData, ICollections, LocalData } from './context/Da
 import {BsFolderFill, BsCloudFill} from 'react-icons/bs'
 
 import styles from './styles/App.module.css'
-import Collections from './components/CollectionSelection';
+
+import { User } from 'firebase/auth';
+import Collection, { ICollection } from './collection';
 
 import Auth from './components/Auth';
-import { User } from 'firebase/auth';
 import CardTable from './components/CardTable';
-import Collection, { ICollection } from './collection';
-import Flashcard from './flashcard';
-import QuizSelector from './components/QuizSelector';
-import MultipleChoice from './components/MultipleChoice';
+import Collections from './components/CollectionSelect';
+import Review from './components/Review';
 
 function getLocalStorageSpace(){
 	var allStrings: string | any[] = [];
@@ -76,12 +75,13 @@ function App() {
 				</div>
 			</div>
 
-			<DataContext.Provider value={ LocalData }>
+			<DataContext.Provider value={ storageMode == StorageMode.Local ? LocalData : FirebaseData }>
 				<section>
 					<Collections
 						activeCollection={activeCollection as ICollection}
 						setActiveCollection={(collection: Collection)=>setActiveCollection(collection)}
-						setActive={(b)=>setActive(b)} />
+						setActive={(b)=>setActive(b)} 
+						storageMode={storageMode} />
 				</section>
 				
 				<section>
@@ -103,16 +103,9 @@ function App() {
 					  </>
 					: activeCollection && activeCollection?.flashcards.length > 0 ?
 					<>
-					{active && <h1> Review </h1>}
 					{
-						activeCollection && active &&
-						<QuizSelector />
-					}
-					{
-						activeCollection && mode == Mode.Quiz && active &&
-						<MultipleChoice 
-							collection={activeCollection} 
-							handleCollectionModification={handleCollectionModification} />
+						active && activeCollection && mode == Mode.Quiz && active &&
+						<Review collection={activeCollection} handleCollectionModification={handleCollectionModification}/>
 					}
 					</> : <h1> No cards to review. </h1>
 				}

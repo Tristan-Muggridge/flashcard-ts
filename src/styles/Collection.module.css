@@ -42,6 +42,20 @@
     opacity: 100%;
 }
 
+.dueAlert {
+    text-align: center;
+    vertical-align: middle;
+    position: absolute;
+    background-color: var(--bg-red);
+    width: 1.5rem;
+    height: 1.5rem;
+
+    top: -0.5rem;
+    right: -.75rem;
+
+    border-radius: 100%;
+}
+
 .contextMenu {
     width: 100%;
     position: absolute;

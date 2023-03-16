@@ -1,0 +1,148 @@
+
+.quizSelector {
+    display: grid;
+    width: 100%;
+    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.quizSelector button {
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 10px;
+    border: transparent;
+}
+
+.active {
+    border: 1px solid var(--font-color) !important;
+    background-color: var(--bg-400);
+}
+
+.correct {
+    background-color: var(--bg-green) !important;
+}
+
+.incorrect {
+    background-color: var(--bg-red) !important;
+}
+
+.multipleChoice {
+    text-align: center;
+    margin: 0 auto;
+    max-width: var(--max-width);
+    width: 100%;
+    outline: transparent;
+}
+
+.heading {
+    width: 100%;
+    text-align: center;
+}
+
+.heading h3 {
+    max-width: 100%;
+    font-size: 2rem;
+}
+
+.choicesGrid {
+    display: grid;
+    max-width: var(--max-width);
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.choice {
+    padding: 0.5rem;
+    margin: 0.5rem;
+    cursor: pointer;
+
+    border-radius: 10px;
+    background-color: var(--bg-600);
+    border: 1px var(--bg-400) solid;
+}
+
+.choice:hover {
+    border: 1px solid var(--bg-600);
+    background-color: var(--bg-400);
+}
+
+
+.inputReview {
+    text-align: center;
+    margin: 0 auto;
+    max-width: var(--max-width);
+    width: 100%;
+    display: flex;
+    gap: 2rem;
+}
+
+.inputReviewNeutral {
+    padding: 0.5rem;
+    border-radius: 10px;
+    outline: 1px white solid;
+}
+
+.inputReview label {
+    padding: 0.5rem;
+}
+
+.inputReview input {
+    padding: 0 0.5rem;
+}
+
+.inputReviewCorrect {
+    outline: 1px  var(--bg-green) solid !important ;
+    outline: transparent;
+}
+
+.inputReviewInCorrect {
+    outline: 1px  var(--bg-red) solid !important ;
+    outline: transparent;
+}
+
+.ConfidenceReview {
+    width: 100%;
+    max-width: var(--max-width);
+    text-align: center;
+}
+
+.ConfidenceReview h5 {
+    max-width: 100%;
+    font-size: 1.5rem;
+    padding: 0%;
+    margin: 0;
+}
+
+.buttonContainer {    
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    height: 2rem;
+    align-content: end;
+    width: 100%;
+    max-width: var(--max-width);
+}
+
+.ConfidenceReview button {
+    border: 1px solid var(--font-color);
+    cursor: pointer;
+}
+
+.neutral {
+    grid-column: 1/-1;
+}
+
+.again {
+    background-color: var(--bg-red);
+}
+
+.hard {
+    background-color: var(--bg-orange);
+}
+
+.good {
+    background-color: var(--bg-green);
+}
+
+.easy {
+    background-color: var(--bg-blue);
+}
