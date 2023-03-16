@@ -1,7 +1,7 @@
-import DataContext, {ICollections} from "../context/DataContext";
+import DataContext, {ICollections} from "../../context/DataContext";
 import { useState, useContext, useEffect } from "react";
 import Collection, { CollectionPlaceHolder } from "./Collection";
-import collection, { ICollection } from "../collection";
+import collection, { ICollection } from "../../collection";
 
 interface IProps {
     activeCollection: ICollection

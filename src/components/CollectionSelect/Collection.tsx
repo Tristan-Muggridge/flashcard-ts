@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import {BsThreeDots, BsPlusLg} from 'react-icons/bs'
-import { ICollection } from '../collection';
-import styles from '../styles//Collection.module.css'
-import Flashcard, { IFlashcard } from '../flashcard';
-import EditModal from './EditModal';
+import { ICollection } from '../../collection';
+import styles from '../../styles/Collection.module.css'
+import Flashcard, { IFlashcard } from '../../flashcard';
+import EditModal from '../EditModal';
 
 interface IProps {
     collection: ICollection, 
@@ -127,7 +127,7 @@ export default function ({collection, content, handleClick, handleCardImport, ha
             {
                 collection ? 
                 <div onClick={() => handleClick(collection)}>
-                    <button className={styles.elipses} onFocus={()=>setShowContextMenu(true)} onBlur={()=> setTimeout(()=>setShowContextMenu(false), 100)}> <i><BsThreeDots /></i> </button>
+                    <button className={styles.elipses} onFocus={()=>setShowContextMenu(true)}> <i><BsThreeDots /></i> </button>
 
                     { showContextMenu && collection && 
                         <ContextMenu 
