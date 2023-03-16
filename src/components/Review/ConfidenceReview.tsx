@@ -20,6 +20,8 @@ enum Difficulty {
 
 export default function ConfidenceReview ({collection, question, handleCollectionModification}:IProps) {
 
+    const [reveal, setReveal] = useState(false);
+    console.debug(reveal)
     const handleAnswer = (difficulty: Difficulty) => {
         
         switch (difficulty) {
@@ -36,21 +38,30 @@ export default function ConfidenceReview ({collection, question, handleCollectio
                 question.answeredCorrectly()
                 break;
         }
-    
+        
+        setReveal(false);
         handleCollectionModification(collection);
     }   
     
     
     return (
-        <div className={styles.ConfidenceReview}>
+        <div className={styles.ConfidenceReview} tabIndex={0}>
 
-            <div className={styles.heading}> <h5> {question.answer} </h5> </div>
+            { reveal == true && <div className={styles.heading}> <h5> {question.answer} </h5> </div>}
 
             <div className={styles.buttonContainer}>
+            {
+                !reveal && <button onClick={() => setReveal(true)} className={styles.neutral} > Show Answer </button>
+            }
+
+            {
+                reveal == true && <>
                 <button onClick={() => handleAnswer(Difficulty.Again)} className={styles.again}> {Difficulty.Again} </button>
                 <button onClick={() => handleAnswer(Difficulty.Hard)}  className={styles.hard}>  {Difficulty.Hard} </button>
                 <button onClick={() => handleAnswer(Difficulty.Good)}  className={styles.good}>  {Difficulty.Good} </button>
                 <button onClick={() => handleAnswer(Difficulty.Easy)}  className={styles.easy}>  {Difficulty.Easy} </button>
+                </>
+            }
             </div>
         </div>
     )
