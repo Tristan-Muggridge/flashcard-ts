@@ -19,7 +19,7 @@ export default class Collection implements ICollection {
         this.flashcards = flashcards;
     }
 
-    static fromJson = (obj: ICollection, id?:string) => {
+    static fromJson = (obj: Collection, id?:string) => {
         return new Collection(
             obj.name,
             obj.flashcards.map( c => Flashcard.fromJson(c) ),

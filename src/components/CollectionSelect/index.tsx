@@ -18,8 +18,18 @@ interface IProps {
 export default function CollectionSelection ({activeCollection, setActiveCollection, setActive, storageMode}: IProps) {
     
     const dataContext = useContext(DataContext);
-    const [collections, setCollections] = useState( dataContext?.loadCollections() as ICollections)
+    const [collections, setCollections] = useState<ICollections>()
     
+    useEffect( () => {
+        
+        const retrieveCollections = async () => {
+            const c = await dataContext?.loadCollections() as ICollections
+            setCollections(c)
+        }
+
+        retrieveCollections();
+    }, [])
+
     const handleSelectionClick = (c: ICollection) => {setActiveCollection({...c}); setActive(true)}
     
     const handleCreateCollection = () => {
@@ -67,7 +77,7 @@ export default function CollectionSelection ({activeCollection, setActiveCollect
 
     useEffect( () => {
         if (!activeCollection) return;
-        const updated = collections;
+        const updated = collections ?? {};
         updated[activeCollection.id] = activeCollection as collection
         setCollections({...updated});
     }, [activeCollection])
