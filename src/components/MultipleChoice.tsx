@@ -97,32 +97,32 @@ export default function MultipleChoice({collection, handleCollectionModification
     }, [collection])
     
     useEffect(() => {
-        console.debug("answered changed")
         setFiltered([...collection.flashcards.filter(card => new Date(card.nextReview) < new Date())]), [answered]}
     , [answered])
 
     useEffect(() => {
-        console.debug("filtered changed")
-        const timeout = setTimeout(() => {  
-            setQuestion([...filtered][0])
+        if (!collection || !question) return;
+        setQuestion([...filtered][0])
 
-            if (question.id == filtered[0].id)
-            {
+        if (question.id == filtered[0].id)
+        {
+            const timeout = setTimeout(() => {  
+
                 if (!collection || !question) return;
                 setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])       
                 Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
-                Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)    
-            }
-
-        }, 500);
-
+                Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)
+            }, 500);
+        }
     }, [filtered])
 
     useEffect(() => {
+        const timeout = setTimeout(() => {  
         if (!collection || !question) return;
             setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])       
             Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
             Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)
+        }, 500);
     }, [question])
 
     return <div className={styles.multipleChoice} ref={multipleChoiceArea} onKeyDown={handleKeyDown} tabIndex={0}>
