@@ -45,9 +45,7 @@ function App() {
 	const [active, setActive] = useState<boolean>(false);
 
 	const handleCollectionModification = (collection: Collection) => {
-        const updated = activeCollection as Collection;
-		updated.flashcards = collection.flashcards
-        setActiveCollection({ ...updated })
+        setActiveCollection({ ...collection })
 	}
 
 	const toggleStorageMode = () => {
@@ -116,7 +114,7 @@ function App() {
 							collection={activeCollection} 
 							handleCollectionModification={handleCollectionModification} />
 					}
-					</> : <h1> No cards to review.</h1>
+					</> : <h1> No cards to review. </h1>
 				}
 				</section>
 

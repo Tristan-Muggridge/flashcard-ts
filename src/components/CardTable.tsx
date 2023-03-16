@@ -24,7 +24,7 @@ export default function ({collection, handleCollectionModification}: IProps) {
     const newPromptInputRef = useRef<HTMLInputElement | null>(null)
 
     const saveChanges = (collection: Collection) => {
-        handleCollectionModification(collection)
+        handleCollectionModification({...collection})
         dataContext?.saveCollection(collection);
     }
 

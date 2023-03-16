@@ -35,7 +35,7 @@ export default function MultipleChoice({collection, handleCollectionModification
     const [filtered, setFiltered] = useState<Flashcard[]>([]);
     const [shuffled, setShuffled] = useState<Flashcard[]>([]);
     
-    const [question, setQuestion] = useState(shuffled[0])
+    const [question, setQuestion] = useState<Flashcard>(shuffled[0])
     const [choices, setChoices] = useState<Flashcard[]>([])
     
     const [answered, setAnswered] = useState(0);
@@ -76,11 +76,11 @@ export default function MultipleChoice({collection, handleCollectionModification
     const handleAnswer = (e: any) => {
         answer.current?.classList.add(styles.correct)
         
-        if (choices[e].id != question.id) {
+        if (choices[e].answer != question.answer) {
             Array.from(document.getElementsByClassName(styles.choice))[e].className = `${styles.incorrect} ${styles.choice}`;
         }
 
-        choices[e].id == question.id
+        choices[e].answer == question.answer
             ? question.answeredCorrectly()
             : question.answeredIncorrectly()        
     
@@ -101,13 +101,12 @@ export default function MultipleChoice({collection, handleCollectionModification
     , [answered])
 
     useEffect(() => {
-        if (!collection || !question) return;
+        if (!collection || !question || filtered.length == 0) return;
         setQuestion([...filtered][0])
 
         if (question.id == filtered[0].id)
         {
             const timeout = setTimeout(() => {  
-
                 if (!collection || !question) return;
                 setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])       
                 Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
@@ -118,7 +117,7 @@ export default function MultipleChoice({collection, handleCollectionModification
 
     useEffect(() => {
         const timeout = setTimeout(() => {  
-        if (!collection || !question) return;
+            if (!collection || !question) return;
             setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])       
             Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
             Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)
