@@ -23,8 +23,8 @@ Technologies Used:
 <ul>
   <input disabled type="checkbox"/> honour system (select from 1-5 how well information could be retrieved) <br />
   <input disabled type="checkbox"/> input system (allow user input on prompt and determine if user was correct, wrong, or close) <br />
-  <input disabled type="checkbox"/> multiple choice (Present a range of other card answers and allow user to attempt selecting the matching answer to displayed prompt) <br />
-  <input disabled type="checkbox"/> update relevant card objects upon finishing review of specific card <br />  
+  <input disabled type="checkbox" checked/> multiple choice (Present a range of other card answers and allow user to attempt selecting the matching answer to displayed prompt) <br />
+  <input disabled type="checkbox" checked/> update relevant card objects upon finishing review of specific card <br />  
 </ul>
 
 
