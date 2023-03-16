@@ -78,20 +78,24 @@
 .inputReviewNeutral {
     padding: 0.5rem;
     border-radius: 10px;
-    outline: 5px  white solid;
+    outline: 1px white solid;
 }
 
 .inputReview label {
     padding: 0.5rem;
 }
 
+.inputReview input {
+    padding: 0 0.5rem;
+}
+
 .inputReviewCorrect {
-    outline: 5px  var(--bg-green) solid !important ;
+    outline: 1px  var(--bg-green) solid !important ;
     outline: transparent;
 }
 
 .inputReviewInCorrect {
-    outline: 5px  var(--bg-red) solid !important ;
+    outline: 1px  var(--bg-red) solid !important ;
     outline: transparent;
 }
 

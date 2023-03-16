@@ -75,12 +75,13 @@ function App() {
 				</div>
 			</div>
 
-			<DataContext.Provider value={ LocalData }>
+			<DataContext.Provider value={ storageMode == StorageMode.Local ? LocalData : FirebaseData }>
 				<section>
 					<Collections
 						activeCollection={activeCollection as ICollection}
 						setActiveCollection={(collection: Collection)=>setActiveCollection(collection)}
-						setActive={(b)=>setActive(b)} />
+						setActive={(b)=>setActive(b)} 
+						storageMode={storageMode} />
 				</section>
 				
 				<section>

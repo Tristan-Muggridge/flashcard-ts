@@ -43,11 +43,9 @@ const shuffle = (array: Flashcard[]) => {
 
 
 export default function QuizSelector ( {collection, handleCollectionModification}: IProps ) {
-    
-    const [reviewMode, setReviewMode] = useState<ReviewModes>(ReviewModes.Multi)
-
     const dataContext = useContext(DataContext);
 
+    const [reviewMode, setReviewMode] = useState<ReviewModes>(ReviewModes.Multi)
     const [filtered, setFiltered] = useState<Flashcard[]>(collection.flashcards.filter(card => new Date(card.nextReview) < new Date()));
     const [question, setQuestion] = useState<Flashcard>(shuffle(filtered)[0])
     
@@ -86,8 +84,8 @@ export default function QuizSelector ( {collection, handleCollectionModification
             if (!collection || !question) return;
             Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
             Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)
-            // Array.from(document.getElementsByClassName(styles.inputReviewCorrect)).forEach(element => element.className = styles.inputReviewNeutral)
-            // Array.from(document.getElementsByClassName(styles.inputReviewInCorrect)).forEach(element => element.className = styles.inputReviewNeutral)
+            Array.from(document.getElementsByClassName(styles.inputReviewCorrect)).forEach(element => element.className = styles.neutral)
+            Array.from(document.getElementsByClassName(styles.inputReviewInCorrect)).forEach(element => element.className = styles.neutral)
         }, 500);
     }, [question])
 

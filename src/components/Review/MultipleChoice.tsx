@@ -76,10 +76,11 @@ export default function MultipleChoice({collection, question, handleCollectionMo
     }   
 
     useEffect(()=> {
-        const timeout = setTimeout(() => {  
-            setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])       
+        const timeout = setTimeout(() => {
+            const shuffled = shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])
+            setChoices(shuffled);       
         }, 500);
-    }, [collection])
+    }, [collection, question])
 
     return <div className={styles.multipleChoice} ref={multipleChoiceArea} onKeyDown={handleKeyDown} tabIndex={0}>
         {   question &&

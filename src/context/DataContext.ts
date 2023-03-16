@@ -19,55 +19,28 @@ export interface ICollections {
 	[id: string]: Collection
 }
 
-export const FirebaseData: IDataContext = {	
-	createCard: async (flashCardCollection: ICollection, card: Flashcard) => {
-		const createFlashCard = async () => {
-			console.debug("db: Create")
-
-			// const collectionRef = collection(db, `flashcard/${card.prompt}-${card.answer}`);
-			const collectionRef = collection(db, "flashcards");
-			const docId = (await addDoc(collectionRef, card.toJson())).withConverter(Flashcard.FirestoreConverter).id
-			const docRef = doc(db, "flashcards", docId).withConverter(Flashcard.FirestoreConverter)
-			const docSnap = await (await getDoc(docRef)).data();
-			return docSnap as Flashcard;
-		}
-
-		return createFlashCard();
+export const FirebaseData: IDataContext = {
+	createCard: function (collection: ICollection, card: Flashcard): Promise<Flashcard> {
+		throw new Error("Function not implemented.");
 	},
-    
-	getAllFlashcards: async () => {
-		console.debug("db: Read")
-
-        const fetchFlashcards = async () => {
-            const flashcards = await getDocs(collection(db, 'flashcards').withConverter(Flashcard.FirestoreConverter));
-            return flashcards.docs.map(doc => doc.data())
-        }
-        return fetchFlashcards();
-    },
-
-	deleteCard: async (card: IFlashcard) => {
-		console.debug("firebase: Delete")
-		console.debug(card)
-		await deleteDoc(doc(db, "flashcards", card.id));
+	getAllFlashcards: function (): Promise<Flashcard[]> {
+		throw new Error("Function not implemented.");
 	},
-
-	updateCard: async (card: Flashcard) => {
-		console.debug("firebase: Update")
-		await setDoc(doc(db, "flashcards", card.id), card.toJson());
+	deleteCard: function (card: Flashcard): void {
+		throw new Error("Function not implemented.");
 	},
-
-	saveCollections: () => {
-
+	updateCard: function (card: IFlashcard, index?: number | undefined): void {
+		throw new Error("Function not implemented.");
 	},
-
-	loadCollections: () => {
-		const output: ICollections = {}
-		return output;
+	loadCollections: function (): ICollections {
+		throw new Error("Function not implemented.");
 	},
-
-	saveCollection: () => {
-
+	saveCollections: function (Collections: ICollections): void {
+		throw new Error("Function not implemented.");
 	},
+	saveCollection: function (Collection: ICollection): void {
+		throw new Error("Function not implemented.");
+	}
 }
 
 export const LocalData: IDataContext = {
@@ -83,15 +56,15 @@ export const LocalData: IDataContext = {
 		const output: ICollections = {}
 		const JSONCollection: ICollections = JSON.parse(localCollections);
 		for (const collection in JSONCollection) {
-			const converted: ICollection = Collection.fromJson(JSONCollection[collection])
-			output[converted.id] = converted; 
+			const converted: Collection = Collection.fromJson(JSONCollection[collection])
+			if (converted) output[converted.id] = converted ; 
 		}
 
 		return output;
 	},
 
-	saveCollection: (collection: ICollection) => {
-		const collections = LocalData.loadCollections();
+	saveCollection: async (collection: Collection) => {
+		const collections = await LocalData.loadCollections();
 		collections[collection.id] = collection;
 		LocalData.saveCollections(collections);
 	},
