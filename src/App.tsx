@@ -50,8 +50,6 @@ function App() {
         setActiveCollection({ ...updated })
 	}
 
-	// useEffect(()=> console.debug(activeCollection ? activeCollection.name : undefined), [activeCollection])
-
 	const toggleStorageMode = () => {
 		storageMode == StorageMode.Local 
 			? setStorageMode(StorageMode.Cloud) 
