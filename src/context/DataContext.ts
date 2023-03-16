@@ -5,51 +5,50 @@ import Flashcard, {IFlashcard} from "../flashcard";
 import Collection, { ICollection } from "../collection";
 
 export interface IDataContext {
-    createCard(collection: ICollection, card: Flashcard):Promise<Flashcard>;
-    getAllFlashcards():Promise<Flashcard[]>;
-	deleteCard(card: Flashcard):void;
-	updateCard(card: IFlashcard, index?:number):void;
-
-	loadCollections(): ICollections
-	saveCollections(Collections: ICollections):void
-	saveCollection(Collection: ICollection):void
+	loadCollections(userId: string): Promise<ICollections>
+	saveCollections(Collections: ICollections, userId: string):void
 }
 
 export interface ICollections {
 	[id: string]: Collection
 }
 
+const ICollectionsConverter = {
+	toFirestore: (collections: ICollections) => {
+		const output:any = {};
+
+		Object.keys(collections).forEach(collection => {
+			output[collection] = Collection.toJson(collections[collection])
+		});
+
+		return output;
+	},
+	fromFirestore: (snapshot: any, options: any) => {
+		const data = snapshot.data(options);
+		return data
+	}
+}
+
 export const FirebaseData: IDataContext = {
-	createCard: function (collection: ICollection, card: Flashcard): Promise<Flashcard> {
-		throw new Error("Function not implemented.");
+	loadCollections: async (userId: string): Promise<ICollections> => {
+		const ref = doc(db, userId, "collections").withConverter(ICollectionsConverter);
+		const docSnap = await getDoc(ref);
+		
+		return docSnap.data()
 	},
-	getAllFlashcards: function (): Promise<Flashcard[]> {
-		throw new Error("Function not implemented.");
-	},
-	deleteCard: function (card: Flashcard): void {
-		throw new Error("Function not implemented.");
-	},
-	updateCard: function (card: IFlashcard, index?: number | undefined): void {
-		throw new Error("Function not implemented.");
-	},
-	loadCollections: function (): ICollections {
-		throw new Error("Function not implemented.");
-	},
-	saveCollections: function (Collections: ICollections): void {
-		throw new Error("Function not implemented.");
-	},
-	saveCollection: function (Collection: ICollection): void {
-		throw new Error("Function not implemented.");
+	
+	saveCollections: (collections: ICollections, userId: string) => {
+		const sendToFirebase = async () => {
+			const ref = doc(db, userId, "collections").withConverter(ICollectionsConverter);
+			await setDoc(ref, collections);
+		} 
+
+		sendToFirebase();
 	}
 }
 
 export const LocalData: IDataContext = {
-	saveCollections: (collections: ICollections) => {
-		if (!collections) return;
-		localStorage.setItem("collection-test", JSON.stringify(collections))
-	},
-
-	loadCollections: () => {
+	loadCollections: (userId: string) => new Promise(resolve => {
 		const localCollections = localStorage.getItem("collection-test");
 		if (!localCollections) return {};
 
@@ -60,39 +59,12 @@ export const LocalData: IDataContext = {
 			if (converted) output[converted.id] = converted ; 
 		}
 
-		return output;
-	},
-
-	saveCollection: async (collection: Collection) => {
-		const collections = await LocalData.loadCollections();
-		collections[collection.id] = collection;
-		LocalData.saveCollections(collections);
-	},
-
-	createCard: async (collection: ICollection, card: Flashcard) => new Promise(resolve => {
-		let tmp = LocalData.loadCollections()
-		tmp[collection.id].flashcards.push(card)
-		localStorage.setItem('collection-test', JSON.stringify(tmp));
-		resolve(card);
-	}),
-    
-	getAllFlashcards: async () => new Promise(resolve => {
-		console.debug("localData: Read")
-		resolve(JSON.parse(localStorage.getItem('flashcards') || "[]").map( (e:IFlashcard) => Flashcard.fromJson(e)))
+		resolve(output);
 	}),
 
-	deleteCard: (card: Flashcard) => {
-		console.debug("localData: Delete")
-		console.debug(card.id)
-		const cards: Flashcard[] = JSON.parse(localStorage.getItem('flashcards') || "[]");
-		localStorage.setItem('flashcards', JSON.stringify(cards.filter(e => e.id != card.id)));
-	},
-
-	updateCard: (card: Flashcard, index: number) => {
-		console.debug("LocalData: Update")
-		const cards: Flashcard[] = JSON.parse(localStorage.getItem('flashcards') || "[]");
-		cards[index] = card
-		localStorage.setItem('flashcards', JSON.stringify(cards));
+	saveCollections: (collections: ICollections, userId: string) => {
+		if (!collections) return;
+		localStorage.setItem("collection-test", JSON.stringify(collections))
 	}
 }
 

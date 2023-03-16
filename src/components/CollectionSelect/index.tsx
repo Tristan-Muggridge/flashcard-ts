@@ -9,22 +9,33 @@ enum StorageMode  {
 }
 
 interface IProps {
+    userId: string
     activeCollection: ICollection
     setActiveCollection(collection: ICollection):void
     setActive(b: boolean):void
     storageMode: StorageMode
 }
 
-export default function CollectionSelection ({activeCollection, setActiveCollection, setActive, storageMode}: IProps) {
+export default function CollectionSelection ({userId, activeCollection, setActiveCollection, setActive, storageMode}: IProps) {
     
     const dataContext = useContext(DataContext);
-    const [collections, setCollections] = useState( dataContext?.loadCollections() as ICollections)
+    const [collections, setCollections] = useState<ICollections>()
     
+    useEffect( () => {
+        
+        const retrieveCollections = async () => {
+            const c = await dataContext?.loadCollections(userId) as ICollections
+            setCollections(c)
+        }
+
+        retrieveCollections();
+    }, [])
+
     const handleSelectionClick = (c: ICollection) => {setActiveCollection({...c}); setActive(true)}
     
     const handleCreateCollection = () => {
         const created = new collection("Created Collection", [])
-        const updatedCollection = collections as ICollections;
+        const updatedCollection = collections as ICollections ?? {};
         updatedCollection[created.id] = created;
         setCollections({...updatedCollection});
     }
@@ -61,20 +72,26 @@ export default function CollectionSelection ({activeCollection, setActiveCollect
     }
 
     useEffect( () => {
-        dataContext?.saveCollections(collections ?? {});
+        if (!collections || Object.keys(collections).length == 0) return;
+        if (collections) dataContext?.saveCollections(collections, userId);
         setCollections(collections);
     }, [collections])
 
     useEffect( () => {
         if (!activeCollection) return;
-        const updated = collections;
+        const updated = collections ?? {};
         updated[activeCollection.id] = activeCollection as collection
         setCollections({...updated});
     }, [activeCollection])
 
-    // useEffect( () => {
-    //     setCollections(dataContext?.loadCollections() as ICollections);
-    // }, [storageMode])
+    useEffect( () => {
+        const retrieveCollections = async () => {
+            const c = await dataContext?.loadCollections(userId) as ICollections
+            setCollections(c)
+        }
+
+        retrieveCollections();
+    }, [storageMode, userId])
 
     return (
     <>

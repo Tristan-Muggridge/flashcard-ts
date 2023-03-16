@@ -1,6 +1,6 @@
 import { auth } from "../util/firebase";
 import { User, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import {useState} from 'react'
+import {createContext, useState} from 'react'
 
 interface IProps {
     setUser: any;
