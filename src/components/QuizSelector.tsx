@@ -6,8 +6,8 @@ export default function QuizSelector () {
     return (
         <div className={styles.quizSelector}>
             <button> Multiple Choice </button>
+            <button> Input Review </button>
             <button> Speed Review </button>
-            <button> Standard </button>
         </div>
     )
 }
