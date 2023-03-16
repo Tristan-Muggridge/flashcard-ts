@@ -4,62 +4,82 @@ import Collection, { CollectionPlaceHolder } from "./Collection";
 import collection, { ICollection } from "../collection";
 
 interface IProps {
-    setCollections(collection: ICollections):void
+    activeCollection: ICollection
     setActiveCollection(collection: ICollection):void
+    setActive(b: boolean):void
 }
 
-export default function CollectionSelection ({setActiveCollection, setCollections}: IProps) {
+export default function CollectionSelection ({activeCollection, setActiveCollection, setActive}: IProps) {
     
     const dataContext = useContext(DataContext);
-    const [scopedCollections, setScopedCollections] = useState(useContext(DataContext)?.loadCollections());
+    const [collections, setCollections] = useState(dataContext?.loadCollections() as ICollections)
     
-    const handleSelectionClick = (c: ICollection) => setActiveCollection({...c})
+    const handleSelectionClick = (c: ICollection) => {setActiveCollection({...c}); setActive(true)}
     
     const handleCreateCollection = () => {
         const created = new collection("Created Collection", [])
-        const updatedCollection = scopedCollections as ICollections;
+        const updatedCollection = collections as ICollections;
         updatedCollection[created.id] = created;
         setCollections({...updatedCollection});
     }
 
     const handleCollectionModification = (collection: ICollection) => {
-        if (!scopedCollections) return;
-        const updatedCollection = scopedCollections;
+        if (!collections) return;
+        const updatedCollection = collections;
         updatedCollection[collection.id].name = collection.name;
         setCollections( {...updatedCollection} )
+        setActiveCollection({...updatedCollection[collection.id]})
     }
 
     const handleDeleteCollection = (id: string) => {
-        if (!scopedCollections) return;
+        if (!collections) return;
         
-        if (Object.keys(scopedCollections).length > 1) {
-            const newCollections = scopedCollections;
+        if (Object.keys(collections).length > 1) {
+            console.debug("deleting single object")
+            const newCollections = collections;
             delete newCollections[id]
-            setCollections( {...newCollections} )    
-        } 
-        else setCollections({});
+            setCollections( {...newCollections} )
+            if (activeCollection && id == activeCollection.id) {
+                setActive(false)
+            }
+        }
+
+        else {setCollections({}); setActive(false)}
     }
 
     const handleCardImport = (collection: ICollection) => {
-        const updated = scopedCollections ?? {};
+        const updated = collections ?? {};
         updated[collection.id].flashcards = collection.flashcards;
         setCollections({...updated})
+        setActiveCollection({...updated[collection.id]})
     }
 
     useEffect( () => {
-        dataContext?.saveCollections(scopedCollections ?? {});
-        setCollections(scopedCollections ?? {});
-    }, [scopedCollections])
+        console.debug("collections", collections)
+        dataContext?.saveCollections(collections ?? {});
+        setCollections(collections);
+    }, [collections])
+
+    useEffect( () => {
+        if (!activeCollection) return;
+        const updated = collections;
+        updated[activeCollection.id] = activeCollection
+        setCollections({...updated});
+    }, [activeCollection])
+
+    useEffect(()=> setCollections(dataContext?.loadCollections() as ICollections), [])
 
     return (
     <>
-    {   scopedCollections && 
-        Object.keys(scopedCollections).map(key => <>
+    {   collections && 
+        Object.keys(collections).map(key => <>
             <Collection 
-                key={scopedCollections[key].id}
-                content={ `${scopedCollections[key]?.name} (${scopedCollections[key]?.flashcards.length})` } 
-                collection={scopedCollections[key] as ICollection} 
-                
+                key={collections[key].id}
+                content={ `
+                    ${activeCollection && collections[key].id == activeCollection.id ? activeCollection.name : collections[key]?.name }
+                    (${activeCollection && collections[key].id == activeCollection.id ? activeCollection.flashcards.length : collections[key]?.flashcards.length })
+                ` } 
+                collection={collections[key] as ICollection} 
                 handleClick={handleSelectionClick}
                 handleCardImport={handleCardImport}
                 handleCollectionDeletion={handleDeleteCollection}
@@ -68,6 +88,7 @@ export default function CollectionSelection ({setActiveCollection, setCollection
         </>)
     }
         <CollectionPlaceHolder
+            key={"placeholder"}
             handleClick={handleCreateCollection} 
         />
     </>

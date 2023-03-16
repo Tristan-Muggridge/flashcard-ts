@@ -18,6 +18,7 @@ const ContextMenu = ({collection, setEditing, handleCardImport, toggleVisibility
     const importButtonRef = useRef<HTMLInputElement | null>(null)
 
     const handleCSVImport = async (e: any) => {
+        e.stopPropagation();
         const reader = () => {
             const output = new FileReader()
             output.onload = async(e: any) => {
@@ -49,8 +50,8 @@ const ContextMenu = ({collection, setEditing, handleCardImport, toggleVisibility
         toggleVisibility();
     }
 
-    const handleCSVExport = () => {
-
+    const handleCSVExport = (e:any) => {
+        e.stopPropagation();
         const cards = collection.flashcards.map(card => 
             `${card.id},${card.prompt},${card.answer},${card.streak},${card.correctQty},${card.incorrectQty},${card.lastReview},`
         ).join("\n")
@@ -68,17 +69,20 @@ const ContextMenu = ({collection, setEditing, handleCardImport, toggleVisibility
         toggleVisibility();
     }
 
-    const handleEditOnClick = () => {
+    const handleEditOnClick = (e:any) => {
+        e.stopPropagation();
         setEditing(true); 
         toggleVisibility();
     }
 
-    const handleDelete = () => {
+    const handleDelete = (e:any) => {
+        e.stopPropagation();
         handleCollectionDeletion(collection.id); 
         toggleVisibility();
     }
 
-    const handleImportClick = () => {
+    const handleImportClick = (e:any) => {
+        e.stopPropagation();
         importButtonRef.current?.click()
     }
 
@@ -122,12 +126,13 @@ export default function ({collection, content, handleClick, handleCardImport, ha
             <div className={styles.collection} onClick={()=>handleClick(collection)}>
             {
                 collection ? 
-                <div onClick={() => handleClick()}>
+                <div onClick={() => handleClick(collection)}>
                     <button className={styles.elipses} onFocus={()=>setShowContextMenu(true)}> <i><BsThreeDots /></i> </button>
-                    { showContextMenu && 
+
+                    { showContextMenu && collection && 
                         <ContextMenu 
                             collection={collection} 
-                            setEditing={()=> {setEditing(true); console.debug(editing)}}
+                            setEditing={()=> setEditing(true)}
                             handleCardImport={handleCardImport} 
                             toggleVisibility={()=> setShowContextMenu(!showContextMenu)} 
                             handleCollectionDeletion={handleCollectionDeletion}
@@ -146,6 +151,8 @@ export default function ({collection, content, handleClick, handleCardImport, ha
             }
                 <div className={styles.rear}> </div>
             </div>
+
+            
 
             {collection && editing && <EditModal initialObject={JSON.parse(JSON.stringify(collection))} handleSubmit={(e: ICollection)=> handleCollectionModification(e)} openState={()=>setEditing(false)}/>}
         </>

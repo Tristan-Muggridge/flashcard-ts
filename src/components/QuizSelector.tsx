@@ -2,11 +2,7 @@ import { IFlashcard } from "../flashcard";
 
 import styles from '../styles/QuizSelector.module.css'
 
-interface IProps {
-    cards: IFlashcard[]
-}
-
-export default function QuizSelector ({cards}: IProps) {
+export default function QuizSelector () {
     return (
         <div className={styles.quizSelector}>
             <button> Multiple Choice </button>

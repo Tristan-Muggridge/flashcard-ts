@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import DataContext, { FirebaseData, ICollections, LocalData } from './context/DataContext';
 import {BsFolderFill, BsCloudFill} from 'react-icons/bs'
 
@@ -35,32 +35,22 @@ enum Mode {
 
 function App() {
 	console.debug(getLocalStorageSpace())
-	
+
 	const [storageMode, setStorageMode] = useState<StorageMode>(StorageMode.Local);
 	const [mode, setMode] = useState<Mode>(Mode.Browser)
 
 	const [user, setUser] = useState<User>();
 	
-	const [collections, setCollections] = useState<ICollections>({});
 	const [activeCollection, setActiveCollection] = useState<ICollection>();
+	const [active, setActive] = useState<boolean>(false);
 
 	const handleCollectionModification = (collection: Collection) => {
-        const updated = collections ?? {};
-		updated[collection.id] = collection
-
-        setCollections({ ...updated })
+        const updated = activeCollection as Collection;
+		updated.flashcards = collection.flashcards
+        setActiveCollection({ ...updated })
 	}
 
-	useEffect(()=> {
-		console.debug(collections)
-		if (!collections || !activeCollection) return;
-		setActiveCollection({...collections[activeCollection.id]})
-
-	}, [collections])
-
-	useEffect(()=> {
-		console.debug(activeCollection)
-	}, [activeCollection])
+	// useEffect(()=> console.debug(activeCollection ? activeCollection.name : undefined), [activeCollection])
 
 	const toggleStorageMode = () => {
 		storageMode == StorageMode.Local 
@@ -91,13 +81,12 @@ function App() {
 			</div>
 
 			<DataContext.Provider value={ LocalData }>
-				
 				<section>
 					<Collections
-						setCollections={setCollections}
-						setActiveCollection={setActiveCollection}  />
+						activeCollection={activeCollection as ICollection}
+						setActiveCollection={(collection: Collection)=>setActiveCollection(collection)}
+						setActive={(b)=>setActive(b)} />
 				</section>
-
 				
 				<section>
 				
@@ -108,33 +97,28 @@ function App() {
 
 				{
 					mode == Mode.Browser 
-					? <>
+					? active && <>
 						<h1> {activeCollection?.name} </h1> 
- 
-						{ 
-							activeCollection?.flashcards && 
-							<CardTable 
-								collection={activeCollection as Collection}
-								setCollections={setCollections}
-								handleCardModification={handleCollectionModification} />
-						}
+
+						<CardTable 
+							collection={activeCollection as Collection}
+							handleCollectionModification={handleCollectionModification} />
 
 					  </>
-					: 
+					: activeCollection && activeCollection?.flashcards.length > 0 ?
 					<>
-					<h1> Quiz </h1>
+					{active && <h1> Review </h1>}
 					{
-						activeCollection && 
-						<QuizSelector cards={activeCollection?.flashcards as Flashcard[]}/>
+						activeCollection && active &&
+						<QuizSelector />
 					}
 					{
-						collections && activeCollection && mode == Mode.Quiz && 
+						activeCollection && mode == Mode.Quiz && active &&
 						<MultipleChoice 
-							collections={collections ? collections: {}}
 							collection={activeCollection} 
 							handleCollectionModification={handleCollectionModification} />
 					}
-					</>
+					</> : <h1> No cards to review.</h1>
 				}
 				</section>
 

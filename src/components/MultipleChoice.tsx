@@ -6,7 +6,6 @@ import Collection, { ICollection } from "../collection";
 
 interface IProps {
     collection: ICollection;
-    collections: ICollections;
     handleCollectionModification(collection: Collection):void
 }
 
@@ -33,12 +32,14 @@ const shuffle = (array: Flashcard[]) => {
 export default function MultipleChoice({collection, handleCollectionModification}: IProps) {
     const dataContext = useContext(DataContext);
 
-    const [filtered, setFiltered] = useState(collection.flashcards.filter(card => new Date(card.nextReview) < new Date()));
-    const [shuffled, setShuffled] = useState(shuffle(filtered));
+    const [filtered, setFiltered] = useState<Flashcard[]>([]);
+    const [shuffled, setShuffled] = useState<Flashcard[]>([]);
     
     const [question, setQuestion] = useState(shuffled[0])
     const [choices, setChoices] = useState<Flashcard[]>([])
     
+    const [answered, setAnswered] = useState(0);
+
     const multipleChoiceArea = useRef<HTMLDivElement>(null);
     const answer = useRef<HTMLDivElement>(null);
 
@@ -84,27 +85,45 @@ export default function MultipleChoice({collection, handleCollectionModification
             : question.answeredIncorrectly()        
     
         saveChanges(collection);
-        
-        setFiltered(collection.flashcards.filter(card => {
-            const output = new Date(card.nextReview) < new Date() ? true : false
-            return output;
-        }))
+        setAnswered(answered+1)
     }
 
     useEffect(() => {
+        setFiltered(collection.flashcards.filter(card => new Date(card.nextReview) < new Date()))
+        setShuffled(shuffle(filtered))
         setQuestion(filtered[0])
         setShuffled(shuffle(filtered))
         multipleChoiceArea.current?.focus();
     }, [collection])
     
     useEffect(() => {
-        const timeout = setTimeout(() => {         
+        console.debug("answered changed")
+        setFiltered([...collection.flashcards.filter(card => new Date(card.nextReview) < new Date())]), [answered]}
+    , [answered])
+
+    useEffect(() => {
+        console.debug("filtered changed")
+        const timeout = setTimeout(() => {  
             setQuestion([...filtered][0])
-            setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])
+
+            if (question.id == filtered[0].id)
+            {
+                if (!collection || !question) return;
+                setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])       
+                Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
+                Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)    
+            }
+
+        }, 500);
+
+    }, [filtered])
+
+    useEffect(() => {
+        if (!collection || !question) return;
+            setChoices([...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])])       
             Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
             Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)
-        }, 500);
-    }, [filtered])
+    }, [question])
 
     return <div className={styles.multipleChoice} ref={multipleChoiceArea} onKeyDown={handleKeyDown} tabIndex={0}>
         <h1> Multiple Choice </h1>

@@ -10,11 +10,10 @@ import styles from '../styles/CardTable.module.css'
 
 interface IProps {
     collection: Collection,
-    setCollections(collection: ICollections):void,
-    handleCardModification(card: Collection):any
+    handleCollectionModification(collection: Collection):any
 }
 
-export default function ({collection, handleCardModification}: IProps) {
+export default function ({collection, handleCollectionModification}: IProps) {
 
     const dataContext = useContext(DataContext);
 
@@ -25,16 +24,18 @@ export default function ({collection, handleCardModification}: IProps) {
     const newPromptInputRef = useRef<HTMLInputElement | null>(null)
 
     const saveChanges = (collection: Collection) => {
-        handleCardModification(collection)
+        handleCollectionModification(collection)
         dataContext?.saveCollection(collection);
     }
 
     const handlePlusOnClick = () => {
-        collection.flashcards = [...collection.flashcards, new Flashcard(newPrompt, newAnswer)]
+        const updated = collection
+        updated.flashcards = [...collection.flashcards, new Flashcard(newPrompt, newAnswer)]
+        saveChanges(updated);
+
         setNewAnswer('');
         setNewPrompt('');
         newPromptInputRef.current?.focus();
-
     }
 
     const handleDeletionOnClick = (index: number) => {
@@ -76,7 +77,7 @@ export default function ({collection, handleCardModification}: IProps) {
                 </tr>
 
                 {
-                    collection.flashcards.map((card, index) => card.prompt && card.answer && 
+                    collection && collection.flashcards.map((card, index) => card.prompt && card.answer && 
                     <tr key={card.id}> 
                         <td>{card.prompt}</td>
                         <td>{card.answer}</td> 
