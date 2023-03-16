@@ -2,7 +2,6 @@ import DataContext, {ICollections} from "../../context/DataContext";
 import { useState, useContext, useEffect } from "react";
 import Collection, { CollectionPlaceHolder } from "./Collection";
 import collection, { ICollection } from "../../collection";
-import { User } from "firebase/auth";
 
 enum StorageMode  {
 	"Local" = "Local",
@@ -92,7 +91,7 @@ export default function CollectionSelection ({userId, activeCollection, setActiv
         }
 
         retrieveCollections();
-    }, [storageMode])
+    }, [storageMode, userId])
 
     return (
     <>
