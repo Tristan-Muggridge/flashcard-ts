@@ -10,7 +10,7 @@ export interface ICollection {
 export default class Collection implements ICollection {
     id: string
     name: string
-    flashcards: IFlashcard[]
+    flashcards: Flashcard[]
 
     constructor(name: string, flashcards: Flashcard[], id?:string) {
         this.id = id ?? crypto.randomUUID()

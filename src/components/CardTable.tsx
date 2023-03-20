@@ -1,6 +1,6 @@
-import DataContext, { ICollections } from "../context/DataContext";
-import { useContext, useState, useRef, useEffect } from "react";
-import { BsFillPencilFill, BsTrash, BsX, BsXLg, BsPlusLg } from "react-icons/bs"
+import DataContext, { ICollections, IDataContext } from "../context/DataContext";
+import { useContext, useState, useRef} from "react";
+import { BsFillPencilFill, BsTrash, BsXLg, BsPlusLg } from "react-icons/bs"
 import Collection from "../collection";
 
 import Flashcard from "../flashcard";
@@ -10,10 +10,11 @@ import styles from '../styles/CardTable.module.css'
 
 interface IProps {
     collection: Collection,
-    handleCollectionModification(collection: Collection):any
+    collections: ICollections
+    handleCollectionModification(collection: Collection, dataContext: IDataContext):any
 }
 
-export default function ({collection, handleCollectionModification}: IProps) {
+export default function ({collection, collections, handleCollectionModification}: IProps) {
 
     const dataContext = useContext(DataContext);
 
@@ -24,11 +25,13 @@ export default function ({collection, handleCollectionModification}: IProps) {
     const newPromptInputRef = useRef<HTMLInputElement | null>(null)
 
     const saveChanges = (collection: Collection) => {
-        handleCollectionModification({...collection})
-        dataContext?.saveCollection(collection);
+        handleCollectionModification(collection, dataContext as IDataContext)
     }
 
     const handlePlusOnClick = () => {
+        
+        if (!newPrompt || !newAnswer) return;
+        
         const updated = collection
         updated.flashcards = [...collection.flashcards, new Flashcard(newPrompt, newAnswer)]
         saveChanges(updated);

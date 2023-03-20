@@ -49,7 +49,7 @@ export const FirebaseData: IDataContext = {
 
 export const LocalData: IDataContext = {
 	loadCollections: (userId: string) => new Promise(resolve => {
-		const localCollections = localStorage.getItem("collection-test");
+		const localCollections = localStorage.getItem("collections");
 		if (!localCollections) return {};
 
 		const output: ICollections = {}
@@ -63,8 +63,7 @@ export const LocalData: IDataContext = {
 	}),
 
 	saveCollections: (collections: ICollections, userId: string) => {
-		if (!collections) return;
-		localStorage.setItem("collection-test", JSON.stringify(collections))
+		localStorage.setItem("collections", JSON.stringify(collections))
 	}
 }
 

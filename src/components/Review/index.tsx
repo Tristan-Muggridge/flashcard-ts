@@ -1,7 +1,7 @@
-import DataContext from "../../context/DataContext";
+import DataContext, { IDataContext } from "../../context/DataContext";
 import { useState, useContext, useEffect } from "react";
 
-import { ICollection } from "../../collection";
+import Collection, { ICollection } from "../../collection";
 import Flashcard from "../../flashcard";
 
 import styles from '../../styles/Review.module.css'
@@ -11,8 +11,8 @@ import InputReview from "./InputReview";
 import ConfidenceReview from "./ConfidenceReview";
 
 interface IProps {
-    collection: ICollection;
-    handleCollectionModification(collection: ICollection):void
+    collection: Collection;
+    handleCollectionModification(collection: ICollection, dataContext: IDataContext):void
 }
 
 enum ReviewModes {
@@ -52,8 +52,7 @@ export default function QuizSelector ( {collection, handleCollectionModification
     const [answered, setAnswered] = useState(0);
 
     const saveChanges = (collection: ICollection) => {
-        handleCollectionModification(collection)
-        dataContext?.saveCollection(collection);
+        handleCollectionModification(collection, dataContext as IDataContext)
         setAnswered(answered+1);
     }
 

@@ -21,7 +21,6 @@ enum Difficulty {
 export default function ConfidenceReview ({collection, question, handleCollectionModification}:IProps) {
 
     const [reveal, setReveal] = useState(false);
-    console.debug(reveal)
     const handleAnswer = (difficulty: Difficulty) => {
         
         switch (difficulty) {

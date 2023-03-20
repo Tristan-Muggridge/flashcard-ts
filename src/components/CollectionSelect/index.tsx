@@ -1,7 +1,7 @@
-import DataContext, {ICollections} from "../../context/DataContext";
+import DataContext, {ICollections, IDataContext} from "../../context/DataContext";
 import { useState, useContext, useEffect } from "react";
 import Collection, { CollectionPlaceHolder } from "./Collection";
-import collection, { ICollection } from "../../collection";
+import collection from "../../collection";
 
 enum StorageMode  {
 	"Local" = "Local",
@@ -10,37 +10,36 @@ enum StorageMode  {
 
 interface IProps {
     userId: string
-    activeCollection: ICollection
-    setActiveCollection(collection: ICollection):void
+    handleDeletion(collections: ICollections, dataContext: IDataContext):void
+    activeCollection: collection
+    setActiveCollection(collection: collection):void
     setActive(b: boolean):void
+    collections: ICollections
+    setCollections(collections: ICollections):void
     storageMode: StorageMode
 }
 
-export default function CollectionSelection ({userId, activeCollection, setActiveCollection, setActive, storageMode}: IProps) {
+export default function CollectionSelection ({collections, handleDeletion, userId, activeCollection, setActiveCollection, setActive, storageMode, setCollections}: IProps) {
     
     const dataContext = useContext(DataContext);
-    const [collections, setCollections] = useState<ICollections>()
     
     useEffect( () => {
-        
         const retrieveCollections = async () => {
             const c = await dataContext?.loadCollections(userId) as ICollections
-            setCollections(c)
+            setCollections({...c})
         }
 
         retrieveCollections();
     }, [])
 
-    const handleSelectionClick = (c: ICollection) => {setActiveCollection({...c}); setActive(true)}
+    const handleSelectionClick = (c: collection) => {setActiveCollection(c); setActive(true)};
     
     const handleCreateCollection = () => {
         const created = new collection("Created Collection", [])
-        const updatedCollection = collections as ICollections ?? {};
-        updatedCollection[created.id] = created;
-        setCollections({...updatedCollection});
+        setCollections({...collections as ICollections, [created.id]: created});
     }
 
-    const handleCollectionModification = (collection: ICollection) => {
+    const handleCollectionModification = (collection: collection) => {
         if (!collections) return;
         const updatedCollection = collections;
         updatedCollection[collection.id].name = collection.name;
@@ -59,12 +58,13 @@ export default function CollectionSelection ({userId, activeCollection, setActiv
             if (activeCollection && id == activeCollection.id) {
                 setActive(false)
             }
+            handleDeletion({...newCollections}, dataContext as IDataContext)
         }
 
-        else {setCollections({}); setActive(false)}
+        else {setCollections({}); setActive(false); handleDeletion({}, dataContext as IDataContext)}
     }
 
-    const handleCardImport = (collection: ICollection) => {
+    const handleCardImport = (collection: collection) => {
         const updated = collections ?? {};
         updated[collection.id].flashcards = collection.flashcards;
         setCollections({...updated})
@@ -74,15 +74,7 @@ export default function CollectionSelection ({userId, activeCollection, setActiv
     useEffect( () => {
         if (!collections || Object.keys(collections).length == 0) return;
         if (collections) dataContext?.saveCollections(collections, userId);
-        setCollections(collections);
     }, [collections])
-
-    useEffect( () => {
-        if (!activeCollection) return;
-        const updated = collections ?? {};
-        updated[activeCollection.id] = activeCollection as collection
-        setCollections({...updated});
-    }, [activeCollection])
 
     useEffect( () => {
         const retrieveCollections = async () => {
@@ -99,17 +91,14 @@ export default function CollectionSelection ({userId, activeCollection, setActiv
         Object.keys(collections).map(key => <>
             <Collection 
                 key={collections[key].id}
-                content={ `
-                    ${activeCollection && collections[key].id == activeCollection.id ? activeCollection.name : collections[key]?.name }
-                    (${activeCollection && collections[key].id == activeCollection.id ? activeCollection.flashcards.length : collections[key]?.flashcards.length })
-                ` } 
-                collection={collections[key] as ICollection} 
+                content={ `${collections[key]?.name} (${collections[key]?.flashcards.length })`} 
+                collection={collections[key] as collection} 
                 handleClick={handleSelectionClick}
                 handleCardImport={handleCardImport}
                 handleCollectionDeletion={handleDeleteCollection}
                 handleCollectionModification={handleCollectionModification}
             />
-        </>)
+        </> )
     }
         <CollectionPlaceHolder
             key={"placeholder"}

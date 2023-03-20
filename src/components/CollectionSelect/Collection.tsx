@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {BsThreeDots, BsPlusLg} from 'react-icons/bs'
+import {BsThreeDots, BsPlusLg, BsPencilFill} from 'react-icons/bs'
 import { ICollection } from '../../collection';
 import styles from '../../styles/Collection.module.css'
 import Flashcard from '../../flashcard';
@@ -129,7 +129,7 @@ export default function ({collection, content, handleClick, handleCardImport, ha
             {
                 collection ? 
                 <div onClick={() => handleClick(collection)}>
-                    <button className={styles.elipses} onClick={()=>setShowContextMenu(!showContextMenu)}> <i><BsThreeDots /></i> </button>
+                    <i className={styles.editIcon} onClick={()=>setShowContextMenu(!showContextMenu)}><BsPencilFill /></i>
 
                     { showContextMenu && collection && 
                         <ContextMenu 
@@ -142,7 +142,7 @@ export default function ({collection, content, handleClick, handleCardImport, ha
                         /> 
                     }
 
-                    { due > 0 && <div className={styles.dueAlert}> {due} </div>}
+                    { due as number > 0 && <div className={styles.dueAlert}> {due} </div>}
 
                     <h5> {content} </h5>
                     {
