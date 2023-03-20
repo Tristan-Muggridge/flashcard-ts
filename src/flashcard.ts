@@ -52,8 +52,6 @@ class Flashcard implements IFlashcard{
 		this.reviewDates(now, nextReview);
 		this.correctQty++;
 		this.streak++;
-
-		console.debug(this.nextReview)
 	}
 
 	answeredIncorrectly = () => {

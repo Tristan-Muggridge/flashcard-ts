@@ -55,7 +55,7 @@ nav i {
 
 .storageToggleBar {
     content: " ";
-    background-color: var(--bg-600);
+    background-color: var(--bg-400);
     width: 100px;
     height: 10px;
     border-radius: 5px;

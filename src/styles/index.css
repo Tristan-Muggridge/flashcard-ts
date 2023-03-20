@@ -30,3 +30,33 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
+button::after {
+  content: '';
+  
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  background-color: black;
+  opacity: 0%;
+  z-index: 10;
+  border-radius: 10px;
+}
+
+button:hover::after {
+  opacity: 20%;
+}
+
+button {
+  position: relative;
+  padding: 1rem;
+  margin: 1rem;
+  min-width: 100px;
+  border: 1px solid white;
+  border-radius: 10px;
+
+  cursor: pointer;
+}
