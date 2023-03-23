@@ -24,7 +24,35 @@ class Flashcard implements IFlashcard{
 	incorrectQty: number;
 	lastReview: Date;
 	nextReview: Date;
-	
+
+	static reviewDates = (card: Flashcard, lastReview: Date, nextReview: Date) => {
+		card.lastReview = lastReview;
+		card.nextReview = nextReview;
+	}
+
+	static answeredCorrectly = (card: Flashcard):void => {
+		const now = new Date();
+		const nextReview = new Date(now);
+		nextReview.setHours( nextReview.getHours() + Flashcard.hoursInterval );
+
+		card.lastReview = now;
+		card.nextReview = nextReview;
+
+		card.correctQty++;
+		card.streak++;
+	}
+
+	static answeredIncorrectly = (card: Flashcard):void => {
+		const now = new Date();
+		const nextReview = new Date(now);
+		nextReview.setSeconds( nextReview.getSeconds() - 10 )
+
+		card.lastReview = now;
+		card.nextReview = nextReview;
+		card.incorrectQty++;
+		card.streak = 0;
+	}
+
 	static hoursInterval = 1;
 
 	constructor(prompt: string, answer: string, id?:string, streak?: number, correctQty?: number, incorrectQty?: number, lastReview?: Date, nextReview?: Date) {
@@ -38,33 +66,7 @@ class Flashcard implements IFlashcard{
 		this.nextReview= nextReview || new Date();
 	}
 
-	reviewDates = (lastReview: Date, nextReview: Date) => {
-		this.lastReview = lastReview;
-		this.nextReview = nextReview;
-	}
-
-	answeredCorrectly = () => {
-		const now = new Date();
-		const nextReview = now;
-		nextReview.setHours( nextReview.getHours() + Flashcard.hoursInterval );
-		nextReview.setSeconds( nextReview.getSeconds() - 10 )
-
-		this.reviewDates(now, nextReview);
-		this.correctQty++;
-		this.streak++;
-	}
-
-	answeredIncorrectly = () => {
-		const now = new Date();
-		const nextReview = now;
-		nextReview.setSeconds( nextReview.getSeconds() - 10 )
-
-		this.reviewDates(now, nextReview);
-		this.incorrectQty++;
-		this.streak = 0;
-	}
-
-	static toJson = (card: IFlashcard) => {
+	static toJson = (card: Flashcard) => {
 		const output: IFlashcard = {
 			id: card.id,
 			prompt: card.prompt,
@@ -78,7 +80,7 @@ class Flashcard implements IFlashcard{
 		return output;
 	}
 
-    static fromJson = (obj: IFlashcard, id?:string) => new Flashcard(
+    static fromJson = (obj: Flashcard, id?:string) => new Flashcard(
         obj.prompt,
         obj.answer,
 		id ?? crypto.randomUUID(),
@@ -93,7 +95,7 @@ class Flashcard implements IFlashcard{
 		toFirestore: (card: Flashcard) => {
 			return Flashcard.toJson(card);
 		},
-		fromFirestore: (snapshot: any, options: any) => {
+		fromFirestore: (snapshot: any, options: any):Flashcard => {
 			const data = snapshot.data(options)
 			return Flashcard.fromJson(data, snapshot.id);
 		}

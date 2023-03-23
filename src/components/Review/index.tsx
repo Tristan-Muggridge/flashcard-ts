@@ -12,13 +12,13 @@ import ConfidenceReview from "./ConfidenceReview";
 
 interface IProps {
     collection: Collection;
-    handleCollectionModification(collection: ICollection, dataContext: IDataContext):void
+    handleCollectionModification(collection: Collection, dataContext: IDataContext):void
 }
 
 enum ReviewModes {
     Multi = "Multi",
     Input = "Input", 
-    Confidence = "Confidence"
+    Confidence = "Confidence",
 }
 
 const shuffle = (array: Flashcard[]) => {
@@ -41,57 +41,39 @@ const shuffle = (array: Flashcard[]) => {
     return array;
 }
 
+const filterCards = (card: Flashcard) => {
+    const now = new Date();
+    return new Date(card.nextReview) < now ? true : false;
+}
 
 export default function QuizSelector ( {collection, handleCollectionModification}: IProps ) {
     const dataContext = useContext(DataContext);
 
     const [reviewMode, setReviewMode] = useState<ReviewModes>(ReviewModes.Multi)
-    const [filtered, setFiltered] = useState<Flashcard[]>(collection.flashcards.filter(card => new Date(card.nextReview) < new Date()));
-    const [question, setQuestion] = useState<Flashcard>(shuffle(filtered)[0])
-    
+    const [filtered, setFiltered] = useState<Flashcard[]>([...shuffle(collection.flashcards.filter(filterCards))]);
+    const [question, setQuestion] = useState<Flashcard>(filtered[Math.floor(Math.random() * filtered.length)]);
     const [answered, setAnswered] = useState(0);
 
-    const saveChanges = (collection: ICollection) => {
+    useEffect(()=> {
+        setFiltered( () => shuffle(collection.flashcards.filter(filterCards)));
+        setQuestion( () => filtered[Math.floor(Math.random() * filtered.length)])
+    }, [collection])
+
+    const saveChanges = (collection: Collection) => {
         handleCollectionModification(collection, dataContext as IDataContext)
         setAnswered(answered+1);
-    }
-
-    useEffect(() => {
-        setFiltered(shuffle(collection.flashcards.filter(card => new Date(card.nextReview) < new Date())))
-    }, [collection])
-    
-    useEffect(() => {
-        setFiltered([...collection.flashcards.filter(card => new Date(card.nextReview) < new Date())]), [answered]
-    }, [answered])
-
-    useEffect(() => {
-        if (!collection || !question || filtered.length == 0) return;                
-
-        setQuestion(filtered[0])
-
-        if (question.id == filtered[0].id)
-        {
-            const timeout = setTimeout(() => {  
-                Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
-                Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)                
-            }, 500);
-        }
-    }, [filtered])
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {  
-            if (!collection || !question) return;
+        
+        const timeout = setTimeout(() => {                  
             Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
             Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)
             Array.from(document.getElementsByClassName(styles.inputReviewCorrect)).forEach(element => element.className = styles.neutral)
             Array.from(document.getElementsByClassName(styles.inputReviewInCorrect)).forEach(element => element.className = styles.neutral)
         }, 500);
-    }, [question])
+    }
 
     return (
     <> 
     {
-    
         filtered.length > 0 ? 
         <>
             <div className={styles.heading}> <h2> Review </h2> </div>
@@ -103,16 +85,15 @@ export default function QuizSelector ( {collection, handleCollectionModification
     
             {question && <div className={styles.heading}> <h3> {question.prompt} </h3> </div>}
 
-            {
-                reviewMode == ReviewModes.Multi &&
-                <MultipleChoice 
+            {    
+                <><MultipleChoice 
                     collection={collection}
                     question={question} 
-                    handleCollectionModification={saveChanges} />
+                    handleCollectionModification={saveChanges} />{collection.flashcards.length}</>
             }
 
-            {
-                reviewMode == ReviewModes.Input &&
+            {/* {
+                reviewMode == ReviewModes.Input && question &&
                 <InputReview 
                     collection={collection}
                     question={question} 
@@ -120,12 +101,12 @@ export default function QuizSelector ( {collection, handleCollectionModification
             }
 
             {
-                reviewMode == ReviewModes.Confidence &&
+                reviewMode == ReviewModes.Confidence && question &&
                 <ConfidenceReview 
                     collection={collection}
                     question={question} 
                     handleCollectionModification={saveChanges} />
-            }
+            } */}
         
         </> : <div className={styles.heading}> <h5> Nothing left to review! </h5> </div>
 

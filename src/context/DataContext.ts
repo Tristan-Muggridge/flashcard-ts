@@ -1,8 +1,8 @@
 import React from "react";
 import { db } from "../util/firebase";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore"; 
-import Flashcard, {IFlashcard} from "../flashcard";
-import Collection, { ICollection } from "../collection";
+import { doc, getDoc, setDoc } from "firebase/firestore"; 
+import Collection from "../collection";
+import Flashcard from "../flashcard";
 
 export interface IDataContext {
 	loadCollections(userId: string): Promise<ICollections>
@@ -24,7 +24,26 @@ const ICollectionsConverter = {
 		return output;
 	},
 	fromFirestore: (snapshot: any, options: any) => {
-		const data = snapshot.data(options);
+		const data = snapshot.data(options);		
+		Object.keys(data).forEach(key => data[key].flashcards.forEach((flashcard: any | Flashcard) => {
+			const epoch = new Date(1970, 0, 1)
+			const lastReview = new Date(epoch)
+			const nextReview = new Date(epoch)
+
+			console.debug(
+				flashcard.lastReview.seconds,
+				flashcard.nextReview.seconds
+			)
+
+			lastReview.setSeconds(flashcard.lastReview.seconds)
+			nextReview.setSeconds(flashcard.nextReview.seconds)
+			
+			flashcard.lastReview = lastReview;
+			flashcard.nextReview = nextReview;
+		}))
+		
+		console.debug("from firestore: ", data)
+
 		return data
 	}
 }

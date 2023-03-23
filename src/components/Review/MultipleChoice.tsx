@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import Flashcard from "../../flashcard"
-import { ICollection } from "../../collection";
+import Collection from "../../collection";
 
 import styles from '../../styles/Review.module.css'
 
 interface IProps {
-    collection: ICollection;
+    collection: Collection;
     question: Flashcard;
-    handleCollectionModification(collection: ICollection):void
+    handleCollectionModification(collection: Collection):void
 }
 
 const shuffle = (array: Flashcard[]) => {
@@ -34,7 +34,7 @@ export default function MultipleChoice({collection, question, handleCollectionMo
     const multipleChoiceArea = useRef<HTMLDivElement>(null);
     const answer = useRef<HTMLButtonElement>(null);
 
-    const [choices, setChoices] = useState<Flashcard[]>([])
+    const [choices, setChoices] = useState<Flashcard[]>(collection.flashcards)
 
     const handleKeyDown = (key: React.KeyboardEvent<HTMLDivElement>) => {
         switch(key.key) {
@@ -61,29 +61,37 @@ export default function MultipleChoice({collection, question, handleCollectionMo
         }
     }
 
+    console.debug("MultipleChoice \n", collection, question)
+
     const handleAnswer = (e: any) => {
         answer.current?.classList.add(styles.correct)
-        
+        if (!choices) return;
+
         if (choices[e].answer != question.answer) {
             Array.from(document.getElementsByClassName(styles.choice))[e].className = `${styles.incorrect} ${styles.choice}`;
         }
 
         choices[e].answer == question.answer
-            ? question.answeredCorrectly()
-            : question.answeredIncorrectly()        
+            ? Flashcard.answeredCorrectly(question)
+            : Flashcard.answeredIncorrectly(question);        
     
         handleCollectionModification(collection);
     }   
 
     useEffect(()=> {
+        console.debug("effect triggered")
+        console.debug(question)
+
+        console.debug("MultipleChoice \n", collection, question)
+
         const timeout = setTimeout(() => {
             const shuffled = shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])
-            setChoices(shuffled);       
+            setChoices(collection.flashcards);       
         }, 500);
     }, [collection, question])
 
     return <div className={styles.multipleChoice} ref={multipleChoiceArea} onKeyDown={handleKeyDown} tabIndex={0}>
-        {   question &&
+        {   question && choices && 
         <>
             <div className={styles.choicesGrid}>
                 {choices.map((card, index: number) => 

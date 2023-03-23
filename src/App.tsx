@@ -125,7 +125,7 @@ function App() {
 								handleCollectionModification={handleCollectionModification} />
 
 						</>
-						: activeCollection && activeCollection?.flashcards.length > 0 ?
+						: active && activeCollection && activeCollection?.flashcards.length > 0 ?
 						<>
 						{
 							activeCollection && mode == Mode.Quiz &&
