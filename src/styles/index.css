@@ -51,12 +51,12 @@ button:hover::after {
 }
 
 button {
-  position: relative;
-  padding: 1rem;
-  margin: 1rem;
-  min-width: 100px;
-  border: 1px solid white;
-  border-radius: 10px;
+  position: relative !important;
+  padding: 1rem !important;
+  margin: 1rem !important;
+  min-width: 100px !important;
+  border: 1px solid white !important;
+  border-radius: 10px !important;
 
-  cursor: pointer;
+  cursor: pointer !important;
 }

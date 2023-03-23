@@ -1,16 +1,17 @@
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 import DataContext, { FirebaseData, ICollections, IDataContext, LocalData } from './context/DataContext';
 import {BsFolderFill, BsCloudFill} from 'react-icons/bs'
 
 import styles from './styles/App.module.css'
 
 import { User } from 'firebase/auth';
-import Collection, { ICollection } from './collection';
+import Collection from './collection';
 
 import Auth from './components/Auth';
 import CardTable from './components/CardTable';
 import Collections from './components/CollectionSelect';
 import Review from './components/Review';
+import { auth } from './util/firebase';
 
 function getLocalStorageSpace(){
 	var allStrings: string | any[] = [];
@@ -45,11 +46,11 @@ function App() {
 	const handleCollectionModification = (collection: Collection, dataContext: IDataContext) => {
         setActiveCollection({...collection})
 		setCollections( () => {return {...collections, [collection.id]: collection}} )
-		dataContext.saveCollections(collections ?? {}, user?.uid ?? "guest")
+		dataContext.saveCollections(collections ?? {}, user?.email ?? "guest")
 	}
 
 	const handleDeletion = (collections: ICollections, dataContext: IDataContext) => {
-		dataContext.saveCollections({...collections}, user?.uid ?? "guest")
+		dataContext.saveCollections({...collections}, user?.email ?? "guest")
 		setCollections({...collections})
 	}
 
@@ -61,11 +62,12 @@ function App() {
 	}
 
 	return (
-		<>
+		<>	
+		<header>
 			<nav>
 				<div>
 					<i> flashcard.ts </i>
-					<p>{ user?.email ? 'Welcome back ' + user.email:''}</p>
+					<p>{ user?.email ? 'Welcome back ' + user.displayName:''}</p>
 				
 					<div className={styles.storageToggleContainer} onClick={toggleStorageMode}>
 						<h5> {StorageMode[storageMode]} Storage </h5>
@@ -77,8 +79,12 @@ function App() {
 						</div>
 					</div>
 
+					{ user && <button onClick={()=> auth.signOut().then( () => setUser(undefined))}> Sign Out </button>}
+
 				</div>
 			</nav>
+		</header>
+
 
 			{/* Authentication */}
 			{
@@ -86,9 +92,7 @@ function App() {
 				<>
 					{ !user && <Auth setUser={ (user: User) => setUser(user) }/>}
 				</>
-			}
-			
-
+			}		
 			
 				<DataContext.Provider value={ storageMode == StorageMode.Local ? LocalData : FirebaseData }>
 					<section>
