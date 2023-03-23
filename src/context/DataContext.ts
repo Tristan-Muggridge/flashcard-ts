@@ -1,5 +1,5 @@
 import React from "react";
-import { db } from "../util/firebase";
+import { db, auth } from "../util/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore"; 
 import Collection from "../collection";
 import Flashcard from "../flashcard";
@@ -30,11 +30,6 @@ const ICollectionsConverter = {
 			const lastReview = new Date(epoch)
 			const nextReview = new Date(epoch)
 
-			console.debug(
-				flashcard.lastReview.seconds,
-				flashcard.nextReview.seconds
-			)
-
 			lastReview.setSeconds(flashcard.lastReview.seconds)
 			nextReview.setSeconds(flashcard.nextReview.seconds)
 			
@@ -42,23 +37,26 @@ const ICollectionsConverter = {
 			flashcard.nextReview = nextReview;
 		}))
 		
-		console.debug("from firestore: ", data)
-
 		return data
 	}
 }
 
 export const FirebaseData: IDataContext = {
+	
 	loadCollections: async (userId: string): Promise<ICollections> => {
-		const ref = doc(db, userId, "collections").withConverter(ICollectionsConverter);
+		const email = auth.currentUser?.email ?? "guest"
+
+		const ref = doc(db, email, "collections").withConverter(ICollectionsConverter);
 		const docSnap = await getDoc(ref);
 		
 		return docSnap.data()
 	},
 	
 	saveCollections: (collections: ICollections, userId: string) => {
+		const email = auth.currentUser?.email ?? "guest"
+		
 		const sendToFirebase = async () => {
-			const ref = doc(db, userId, "collections").withConverter(ICollectionsConverter);
+			const ref = doc(db, email, "collections").withConverter(ICollectionsConverter);
 			await setDoc(ref, collections);
 		} 
 

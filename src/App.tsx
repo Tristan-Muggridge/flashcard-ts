@@ -46,11 +46,11 @@ function App() {
 	const handleCollectionModification = (collection: Collection, dataContext: IDataContext) => {
         setActiveCollection({...collection})
 		setCollections( () => {return {...collections, [collection.id]: collection}} )
-		dataContext.saveCollections(collections ?? {}, user?.email ?? "guest")
+		dataContext.saveCollections(collections ?? {}, "boogerts" ?? "guest")
 	}
 
 	const handleDeletion = (collections: ICollections, dataContext: IDataContext) => {
-		dataContext.saveCollections({...collections}, user?.email ?? "guest")
+		dataContext.saveCollections({...collections}, "boogerts" ?? "guest")
 		setCollections({...collections})
 	}
 

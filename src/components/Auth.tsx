@@ -54,6 +54,8 @@ export default function Auth({setUser}:IProps) {
     onAuthStateChanged(auth, (authedUser) => {
 		if (authedUser) setUser(authedUser)
 		else console.debug("signed out");
+
+        console.debug(authedUser)
 	})
     
     return <div className={styles.auth}>
