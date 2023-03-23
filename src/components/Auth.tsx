@@ -1,5 +1,6 @@
 import { auth } from "../util/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from "firebase/auth";
+
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from 'react'
 
 import styles from '../styles/Auth.module.css'
@@ -8,53 +9,76 @@ interface IProps {
     setUser: any;
 }
 
+enum Operation {
+    "sign-up" = "sign-up",
+    'login' = "login"
+}
+
 export default function Auth({setUser}:IProps) {
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
+    const [username, setUsername] = useState('');
+    const [mode, setMode] = useState(Operation.login);
     const [error, setError] = useState('');
 
-    enum Operation {
-        "sign-up",
-        'login'
-    }
-
-    const handleSubmit = async (e: any, op: Operation=Operation.login) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
 
-        if (op === Operation["sign-up"]) {
-            createUserWithEmailAndPassword(auth, email, password)
+        if (mode == Operation["sign-up"] && !username) {
+            setMode(Operation["sign-up"]);
+            return;
+        }
+
+        const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password))
+        const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+        const passwordHex = hashArray
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join(""); // convert bytes to hex string
+
+        if (mode == Operation["sign-up"]) {
+            createUserWithEmailAndPassword(auth, email, passwordHex)
+            .then( request => {
+                setUser({...request.user, displayName: username})
+            })
+            .catch( error => setError(error.message))
+        }
+        
+        else if (mode == Operation["login"]) {
+            signInWithEmailAndPassword(auth, email, passwordHex)
             .then( request => setUser(request.user))
             .catch( error => setError(error.message))
         }
-        else {
-            signInWithEmailAndPassword(auth, email, password)
-            .then( request => setUser(request.user))
-            .catch( error => setError(error.message))
-
-            setPersistence(auth, browserSessionPersistence)
-            .then(() => signInWithEmailAndPassword(auth, email, password))
-            .catch(error => console.error(error.code, error.message))
-        }        
     } 
-    
-    
 
+    onAuthStateChanged(auth, (authedUser) => {
+		if (authedUser) setUser(authedUser)
+		else console.debug("signed out");
+	})
+    
     return <div className={styles.auth}>
         <h2>Currently Signed in as Guest User</h2>
 
         { error && <p style={{color: "red"}}> {error} </p> }
 
-        <form  onSubmit={e=> handleSubmit(e)} style={{display: 'flex', flexDirection:"column", textAlign:"left"}}>
+        <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection:"column", textAlign:"left"}}>
             <label htmlFor="username">email</label>
-            <input type="email" name="email" id="input-email" onChange={ e=> setEmail(e.target.value) } value={email}/>
+            <input required type="email" name="email" id="input-email" onChange={ e=> setEmail(e.target.value) } value={email}/>
             <label htmlFor="password">password</label>
-            <input type="password" autoComplete="true" name="password" id="input-password" onChange={ e=> setPassword(e.target.value) } value={password}/>
+            <input required type="password" autoComplete="true" name="password" id="input-password" onChange={ e=> setPassword(e.target.value) } value={password}/>
+            
+            {   mode == Operation["sign-up"] && 
+                <>
+                    <label htmlFor="username">username</label>
+                    <input type="username" name="username" id="input-username" onChange={ e=> setUsername(e.target.value) } value={username}/>
+                </>
+            }
+
             <div>
-                <button type="submit" onClick={ e => handleSubmit(e, Operation["sign-up"])}> Sign Up </button>
-                <button type="submit" onClick={ e=> handleSubmit(e)}> Log In </button>
+                <button type="submit" onClick={()=>setMode(()=>Operation["sign-up"])}> Sign Up </button>
+                <button type="submit" onClick={()=>setMode(()=>Operation.login)}> Log In </button>
             </div>
         </form>
     </div>
 }
+
