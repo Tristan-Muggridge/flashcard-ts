@@ -30,6 +30,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        env:
+          apiKey: ${{secrets.APIKEY}}
+          authDomain: ${{secrets.AUTHDOMAIN}}
+          projectId: ${{secrets.PROJECTID}}
+          storageBucket: ${{secrets.STORAGEBUCKET}}
+          messagingSenderId: ${{secrets.MESSAGINGSENDERID}}
+          appId: ${{secrets.APPID}}
+          measurementId: ${{secrets.MEASUREMENTID}}
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
@@ -49,11 +57,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
-        with:
-          apiKey: ${{secrets.APIKEY}}
-          authDomain: ${{secrets.AUTHDOMAIN}}
-          projectId: ${{secrets.PROJECTID}}
-          storageBucket: ${{secrets.STORAGEBUCKET}}
-          messagingSenderId: ${{secrets.MESSAGINGSENDERID}}
-          appId: ${{secrets.APPID}}
-          measurementId: ${{secrets.MEASUREMENTID}}
