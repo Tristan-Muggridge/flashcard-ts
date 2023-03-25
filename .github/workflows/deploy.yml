@@ -26,15 +26,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    env:
-      VITE_apiKey: ${{ secrets.VITE_APIKEY }}
-      VITE_authDomain: ${{ secrets.VITE_AUTHDOMAIN }}
-      VITE_projectId: ${{ secrets.VITE_PROJECTID }}
-      VITE_storageBucket: ${{ secrets.VITE_STORAGEBUCKET }}
-      VITE_messagingSenderId: ${{ secrets.VITE_MESSAGINGSENDERID }}
-      VITE_appId: ${{ secrets.VITE_APPID }}
-      VITE_measurementId: ${{ secrets.VITE_MEASUREMENTID }}
-
     with:
       VITE_apiKey: ${{ secrets.VITE_APIKEY }}
       VITE_authDomain: ${{ secrets.VITE_AUTHDOMAIN }}
@@ -60,6 +51,15 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+        env:
+          VITE_apiKey: ${{ secrets.VITE_APIKEY }}
+          VITE_authDomain: ${{ secrets.VITE_AUTHDOMAIN }}
+          VITE_projectId: ${{ secrets.VITE_PROJECTID }}
+          VITE_storageBucket: ${{ secrets.VITE_STORAGEBUCKET }}
+          VITE_messagingSenderId: ${{ secrets.VITE_MESSAGINGSENDERID }}
+          VITE_appId: ${{ secrets.VITE_APPID }}
+          VITE_measurementId: ${{ secrets.VITE_MEASUREMENTID }}
+          
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
