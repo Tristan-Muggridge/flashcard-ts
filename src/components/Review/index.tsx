@@ -1,7 +1,7 @@
 import DataContext, { IDataContext } from "../../context/DataContext";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext} from "react";
 
-import Collection, { ICollection } from "../../collection";
+import Collection from "../../collection";
 import Flashcard from "../../flashcard";
 
 import styles from '../../styles/Review.module.css'
@@ -50,24 +50,22 @@ export default function QuizSelector ( {collection, handleCollectionModification
     const dataContext = useContext(DataContext);
 
     const [reviewMode, setReviewMode] = useState<ReviewModes>(ReviewModes.Multi)
-    const [filtered, setFiltered] = useState<Flashcard[]>([...shuffle(collection.flashcards.filter(filterCards))]);
-    const [question, setQuestion] = useState<Flashcard>(filtered[Math.floor(Math.random() * filtered.length)]);
     const [answered, setAnswered] = useState(0);
 
-    useEffect(()=> {
-        setFiltered( () => shuffle(collection.flashcards.filter(filterCards)));
-        setQuestion( () => filtered[Math.floor(Math.random() * filtered.length)])
-    }, [collection])
+    const filtered = shuffle(collection.flashcards.filter(filterCards));
+    const question = filtered[Math.floor(Math.random() * filtered.length)];
 
     const saveChanges = (collection: Collection) => {
         handleCollectionModification(collection, dataContext as IDataContext)
         setAnswered(answered+1);
         
+
+        Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
+        Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)
+        Array.from(document.getElementsByClassName(styles.inputReviewCorrect)).forEach(element => element.className = styles.neutral)
+        Array.from(document.getElementsByClassName(styles.inputReviewInCorrect)).forEach(element => element.className = styles.neutral)
+
         const timeout = setTimeout(() => {                  
-            Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
-            Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)
-            Array.from(document.getElementsByClassName(styles.inputReviewCorrect)).forEach(element => element.className = styles.neutral)
-            Array.from(document.getElementsByClassName(styles.inputReviewInCorrect)).forEach(element => element.className = styles.neutral)
         }, 500);
     }
 
@@ -84,15 +82,14 @@ export default function QuizSelector ( {collection, handleCollectionModification
             </div>
     
             {question && <div className={styles.heading}> <h3> {question.prompt} </h3> </div>}
-
-            {    
-                <><MultipleChoice 
-                    collection={collection}
-                    question={question} 
-                    handleCollectionModification={saveChanges} />{collection.flashcards.length}</>
+            
+            {   reviewMode == ReviewModes.Multi && "question" &&
+                        <MultipleChoice 
+                            collection={{...collection, flashcards: shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])}}
+                            question={question}
+                            handleCollectionModification={saveChanges} />
             }
-
-            {/* {
+            {
                 reviewMode == ReviewModes.Input && question &&
                 <InputReview 
                     collection={collection}
@@ -106,10 +103,9 @@ export default function QuizSelector ( {collection, handleCollectionModification
                     collection={collection}
                     question={question} 
                     handleCollectionModification={saveChanges} />
-            } */}
+            }
         
         </> : <div className={styles.heading}> <h5> Nothing left to review! </h5> </div>
-
     }
     </>
     )

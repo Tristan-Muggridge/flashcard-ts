@@ -10,31 +10,11 @@ interface IProps {
     handleCollectionModification(collection: Collection):void
 }
 
-const shuffle = (array: Flashcard[]) => {
-    if (array.length == 0) return array;
-
-    let currentIndex = array.length,  randomIndex;
-    
-    // While there remain elements to shuffle.
-    while (currentIndex != 0) {
-    
-        // Pick a remaining element.
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-    
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex], array[currentIndex]];
-    }
-    
-    return array;
-}
-
 export default function MultipleChoice({collection, question, handleCollectionModification}: IProps) {
     const multipleChoiceArea = useRef<HTMLDivElement>(null);
     const answer = useRef<HTMLButtonElement>(null);
 
-    const [choices, setChoices] = useState<Flashcard[]>(collection.flashcards)
+    let choices:Flashcard[] = collection.flashcards;
 
     const handleKeyDown = (key: React.KeyboardEvent<HTMLDivElement>) => {
         switch(key.key) {
@@ -61,7 +41,7 @@ export default function MultipleChoice({collection, question, handleCollectionMo
         }
     }
 
-    console.debug("MultipleChoice \n", collection, question)
+    console.debug(question.answer)
 
     const handleAnswer = (e: any) => {
         answer.current?.classList.add(styles.correct)
@@ -71,24 +51,16 @@ export default function MultipleChoice({collection, question, handleCollectionMo
             Array.from(document.getElementsByClassName(styles.choice))[e].className = `${styles.incorrect} ${styles.choice}`;
         }
 
-        choices[e].answer == question.answer
+        setTimeout(()=> {
+            choices[e].answer == question.answer
             ? Flashcard.answeredCorrectly(question)
             : Flashcard.answeredIncorrectly(question);        
     
-        handleCollectionModification(collection);
+            handleCollectionModification(collection);
+
+            // choices = [...collection.flashcards.filter(c=>c.id!=question.id).slice(0, 4), question]
+        }, 500)
     }   
-
-    useEffect(()=> {
-        console.debug("effect triggered")
-        console.debug(question)
-
-        console.debug("MultipleChoice \n", collection, question)
-
-        const timeout = setTimeout(() => {
-            const shuffled = shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])
-            setChoices(collection.flashcards);       
-        }, 500);
-    }, [collection, question])
 
     return <div className={styles.multipleChoice} ref={multipleChoiceArea} onKeyDown={handleKeyDown} tabIndex={0}>
         {   question && choices && 

@@ -25,16 +25,16 @@ export default function ConfidenceReview ({collection, question, handleCollectio
         
         switch (difficulty) {
             case Difficulty.Again:
-                question.answeredIncorrectly()
+                Flashcard.answeredIncorrectly(question);
                 break;
             case Difficulty.Hard:
-                question.answeredIncorrectly()
+                Flashcard.answeredIncorrectly(question);
                 break;
             case Difficulty.Good:
-                question.answeredCorrectly()
+                Flashcard.answeredCorrectly(question);
                 break;
             case Difficulty.Easy:
-                question.answeredCorrectly()
+                Flashcard.answeredCorrectly(question);
                 break;
         }
         
