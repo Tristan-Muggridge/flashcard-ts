@@ -20,10 +20,10 @@ export default function InputReview ({collection, question, handleCollectionModi
                 
         if (response == question.answer) {
             inputField.current?.classList.add(styles.inputReviewCorrect)
-            question.answeredCorrectly()
+            Flashcard.answeredCorrectly(question);
         } else {
             inputField.current?.classList.add(styles.inputReviewInCorrect)
-            question.answeredIncorrectly()
+            Flashcard.answeredIncorrectly(question);
         }
 
         handleCollectionModification(collection);
