@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import Flashcard from "../../flashcard"
 import Collection from "../../collection";
 
@@ -10,11 +10,32 @@ interface IProps {
     handleCollectionModification(collection: Collection):void
 }
 
+const shuffle = (array: Flashcard[]) => {
+    if (array.length == 0) return array;
+
+    let currentIndex = array.length,  randomIndex;
+    
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+    
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+    
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    
+    return array;
+}
+
 export default function MultipleChoice({collection, question, handleCollectionModification}: IProps) {
     const multipleChoiceArea = useRef<HTMLDivElement>(null);
     const answer = useRef<HTMLButtonElement>(null);
 
-    let choices:Flashcard[] = collection.flashcards;
+    
+    let choices:Flashcard[] = [...shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])];
 
     const handleKeyDown = (key: React.KeyboardEvent<HTMLDivElement>) => {
         switch(key.key) {
@@ -41,8 +62,6 @@ export default function MultipleChoice({collection, question, handleCollectionMo
         }
     }
 
-    console.debug(question.answer)
-
     const handleAnswer = (e: any) => {
         answer.current?.classList.add(styles.correct)
         if (!choices) return;
@@ -58,7 +77,7 @@ export default function MultipleChoice({collection, question, handleCollectionMo
     
             handleCollectionModification(collection);
 
-            // choices = [...collection.flashcards.filter(c=>c.id!=question.id).slice(0, 4), question]
+            choices = [...collection.flashcards.filter(c=>c.id!=question.id || c.answer!=question.answer).slice(0, 5), question]
         }, 500)
     }   
 

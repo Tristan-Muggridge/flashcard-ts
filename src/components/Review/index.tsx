@@ -52,14 +52,13 @@ export default function QuizSelector ( {collection, handleCollectionModification
     const [reviewMode, setReviewMode] = useState<ReviewModes>(ReviewModes.Multi)
     const [answered, setAnswered] = useState(0);
 
-    const filtered = shuffle(collection.flashcards.filter(filterCards));
+    const filtered = [...shuffle(collection.flashcards.filter(filterCards))];
     const question = filtered[Math.floor(Math.random() * filtered.length)];
 
     const saveChanges = (collection: Collection) => {
         handleCollectionModification(collection, dataContext as IDataContext)
         setAnswered(answered+1);
         
-
         Array.from(document.getElementsByClassName(styles.correct)).forEach(element => element.className = styles.choice)
         Array.from(document.getElementsByClassName(styles.incorrect)).forEach(element => element.className = styles.choice)
         Array.from(document.getElementsByClassName(styles.inputReviewCorrect)).forEach(element => element.className = styles.neutral)
@@ -85,7 +84,7 @@ export default function QuizSelector ( {collection, handleCollectionModification
             
             {   reviewMode == ReviewModes.Multi && "question" &&
                         <MultipleChoice 
-                            collection={{...collection, flashcards: shuffle([...collection.flashcards.filter(c=>c.id!=question.id).slice(0,5), question])}}
+                            collection={collection}
                             question={question}
                             handleCollectionModification={saveChanges} />
             }
