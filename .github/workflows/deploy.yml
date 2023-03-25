@@ -30,6 +30,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
@@ -49,3 +50,11 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
+        with:
+          VITE_apiKey: ${{ secrets.VITE_apiKey }}
+          VITE_authDomain: ${{ secrets.VITE_authDomain }}
+          VITE_projectId: ${{ secrets.VITE_projectId }}
+          VITE_storageBucket: ${{ secrets.VITE_storageBucket }}
+          VITE_messagingSenderId: ${{ secrets.VITE_messagingSenderId }}
+          VITE_appId: ${{ secrets.VITE_appId }}
+          VITE_measurementId: ${{ secrets.VITE_measurementId }}
