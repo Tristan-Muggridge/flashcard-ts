@@ -13,7 +13,7 @@
 
   --font-color: #e0e1dd;
 
-  --max-width: 1280px;
+  --max-width: 1140px;
 
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -23,40 +23,11 @@
   color: var(--font-color);
   background-color: var(--bg-800);
 
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-}
 
-button::after {
-  content: '';
-  
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  background-color: black;
-  opacity: 0%;
-  z-index: 10;
-  border-radius: 10px;
-}
-
-button:hover::after {
-  opacity: 20%;
-}
-
-button {
-  position: relative !important;
-  padding: 1rem !important;
-  margin: 1rem !important;
-  min-width: 100px !important;
-  border: 1px solid white !important;
-  border-radius: 10px !important;
-
-  cursor: pointer !important;
+  box-sizing: border-box;
 }

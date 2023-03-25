@@ -25,6 +25,11 @@
     user-select: none;
 }
 
+.collection p {
+    margin: 0;
+    text-align: start;
+}
+
 .editIcon {
     top: 0;
     left: 0;

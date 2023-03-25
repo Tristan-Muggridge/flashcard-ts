@@ -12,16 +12,7 @@ import CardTable from './components/CardTable';
 import Collections from './components/CollectionSelect';
 import Review from './components/Review';
 import { auth } from './util/firebase';
-
-function getLocalStorageSpace(){
-	var allStrings: string | any[] = [];
-	for(var key in window.localStorage){
-		if(window.localStorage.hasOwnProperty(key)){
-			allStrings.push(window.localStorage[key]);
-		}
-	}
-	return allStrings ? 3 + ((allStrings.join('').length*16)/(8*1024)) + ' KB' : 'Empty (0 KB)';
-};
+import Button from './components/Button';
 
 enum StorageMode  {
 	"Local" = "Local",
@@ -79,7 +70,7 @@ function App() {
 						</div>
 					</div>
 
-					{ user && <button onClick={()=> auth.signOut().then( () => setUser(undefined))}> Sign Out </button>}
+					{ user && <Button onClick={()=> auth.signOut().then( () => setUser(undefined))} caption={'Sign Out'} /> }
 
 				</div>
 			</nav>
@@ -109,9 +100,9 @@ function App() {
 					
 					<section>
 					
-						<span>
-							<button onClick={()=>setMode(Mode.Browser)}>Browser</button>
-							<button onClick={()=>setMode(Mode.Quiz)}>Review</button>
+						<span style={{display: 'flex', gap: '1rem'}}>
+							<Button onClick={()=>setMode(Mode.Browser)} caption={'Browser'} /> 
+							<Button onClick={()=>setMode(Mode.Quiz)} caption={'Review'} /> 
 						</span>
 
 					{

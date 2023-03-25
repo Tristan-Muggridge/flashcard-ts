@@ -1,7 +1,7 @@
 import { auth } from "../util/firebase";
 
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import styles from '../styles/Auth.module.css'
 
@@ -16,6 +16,8 @@ enum Operation {
 
 export default function Auth({setUser}:IProps) {
     
+    const usernameRef = useRef<HTMLInputElement>(null);
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
@@ -27,6 +29,7 @@ export default function Auth({setUser}:IProps) {
 
         if (mode == Operation["sign-up"] && !username) {
             setMode(Operation["sign-up"]);
+            usernameRef.current?.focus();
             return;
         }
 
@@ -40,6 +43,7 @@ export default function Auth({setUser}:IProps) {
             createUserWithEmailAndPassword(auth, email, passwordHex)
             .then( request => {
                 setUser({...request.user, displayName: username})
+                updateProfile(request.user, {displayName: username})
             })
             .catch( error => setError(error.message))
         }
@@ -53,9 +57,6 @@ export default function Auth({setUser}:IProps) {
 
     onAuthStateChanged(auth, (authedUser) => {
 		if (authedUser) setUser(authedUser)
-		else console.debug("signed out");
-
-        console.debug(authedUser)
 	})
     
     return <div className={styles.auth}>
@@ -72,7 +73,7 @@ export default function Auth({setUser}:IProps) {
             {   mode == Operation["sign-up"] && 
                 <>
                     <label htmlFor="username">username</label>
-                    <input type="username" name="username" id="input-username" onChange={ e=> setUsername(e.target.value) } value={username}/>
+                    <input type="username" ref={usernameRef} name="username" id="input-username" onChange={ e=> setUsername(e.target.value) } value={username}/>
                 </>
             }
 
