@@ -1,0 +1,28 @@
+.Button::after {
+    content: '';
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background-color: white;
+    opacity: 0%;
+    z-index: 10;
+    border-radius: 10px;
+}
+  
+.Button:hover::after {
+    opacity: 30%;
+}
+  
+.Button {
+    position: relative;
+    padding: 0.5rem 0.25rem;
+    min-width: 100px;
+    border: 1px solid white;
+    border-radius: 10px;
+
+    cursor: pointer;
+}

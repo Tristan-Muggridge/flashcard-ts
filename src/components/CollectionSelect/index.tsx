@@ -88,22 +88,20 @@ export default function CollectionSelection ({collections, handleDeletion, userI
     return (
     <>
     {   collections && 
-        Object.keys(collections).map(key => <>
+        Object.keys(collections).map(key => 
             <Collection 
                 key={collections[key].id}
-                content={ `${collections[key]?.name} (${collections[key]?.flashcards.length })`} 
+                content={<div style={{display: 'flex', flexDirection: 'column'}}> <p>{collections[key]?.name}</p> <p>({collections[key]?.flashcards.length} Card{collections[key]?.flashcards.length==1?'':'s'})</p> </div>} 
                 collection={collections[key] as collection} 
                 handleClick={handleSelectionClick}
                 handleCardImport={handleCardImport}
                 handleCollectionDeletion={handleDeleteCollection}
-                handleCollectionModification={handleCollectionModification}
-            />
-        </> )
+                handleCollectionModification={handleCollectionModification} />
+        )
     }
         <CollectionPlaceHolder
             key={"placeholder"}
-            handleClick={handleCreateCollection} 
-        />
+            handleClick={handleCreateCollection} />
     </>
     )
 }
