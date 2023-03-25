@@ -50,7 +50,7 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
-        with:
+        env:
           VITE_apiKey: ${{ secrets.VITE_apiKey }}
           VITE_authDomain: ${{ secrets.VITE_authDomain }}
           VITE_projectId: ${{ secrets.VITE_projectId }}
