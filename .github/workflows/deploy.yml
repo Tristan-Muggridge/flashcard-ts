@@ -39,6 +39,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      -name: Write to console
         run: |
           echo $VITE_authDomain
       - name: Set up Node
