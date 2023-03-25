@@ -9,7 +9,7 @@ import { browserSessionPersistence, getAuth, setPersistence } from "firebase/aut
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 export const firebaseConfig = {
-  apiKey: import.meta.env.apiKey,
+  apiKey: process.env.AUTH_TOKEN,
   authDomain: import.meta.env.authDomain,
   projectId: import.meta.env.projectId,
   storageBucket: import.meta.env.storageBucket,
