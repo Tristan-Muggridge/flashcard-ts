@@ -15,4 +15,5 @@ export default defineConfig({
       start_url: '.',
       icons: []
     }})],
+    base: '/'
 })
