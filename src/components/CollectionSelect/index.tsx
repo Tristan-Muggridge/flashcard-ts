@@ -23,6 +23,8 @@ export default function CollectionSelection ({collections, handleDeletion, userI
     
     const dataContext = useContext(DataContext);
     
+    console.debug("CollectionSelection: ", collections, activeCollection, storageMode, userId)
+
     const handleSelectionClick = (c: collection) => {setActiveCollection(c); setActive(true)};
     
     const handleCreateCollection = () => {

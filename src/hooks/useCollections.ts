@@ -1,10 +1,9 @@
-import DataContext, { ICollections } from "../context/DataContext";
+import DataContext, { ICollections, LocalData } from "../context/DataContext";
 import { useState, useEffect, useContext } from "react";
 
 export default function useCollections(userId: string) {
 
-    const dataContext = useContext(DataContext);
-
+    const dataContext = useContext(DataContext) ?? LocalData;
     const [collections, setCollections] = useState<ICollections>()
 
     useEffect( () => {
@@ -14,7 +13,7 @@ export default function useCollections(userId: string) {
         }
 
         retrieveCollections();
-    }, [])
+    }, [dataContext])
 
     return {collections, setCollections};
 }
