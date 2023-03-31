@@ -13,6 +13,7 @@ import Collections from './components/CollectionSelect';
 import Review from './components/Review';
 import { auth } from './util/firebase';
 import Button from './components/Button';
+import useCollections from './hooks/useCollections';
 
 enum StorageMode  {
 	"Local" = "Local",
@@ -27,21 +28,21 @@ enum Mode {
 function App() {
 	const [storageMode, setStorageMode] = useState<StorageMode>(StorageMode.Local);
 	const [mode, setMode] = useState<Mode>(Mode.Browser)
-    const [collections, setCollections] = useState<ICollections>()
-
 	const [user, setUser] = useState<User>();
 	
 	const [activeCollection, setActiveCollection] = useState<Collection>();
 	const [active, setActive] = useState<boolean>(false);
 
+	const {collections, setCollections} = useCollections(user?.email ?? "guest");
+
 	const handleCollectionModification = (collection: Collection, dataContext: IDataContext) => {
         setActiveCollection({...collection})
 		setCollections( () => {return {...collections, [collection.id]: collection}} )
-		dataContext.saveCollections(collections ?? {}, "boogerts" ?? "guest")
+		dataContext.saveCollections(collections ?? {}, user?.email ?? "guest")
 	}
 
 	const handleDeletion = (collections: ICollections, dataContext: IDataContext) => {
-		dataContext.saveCollections({...collections}, "boogerts" ?? "guest")
+		dataContext.saveCollections({...collections}, user?.email ?? "guest")
 		setCollections({...collections})
 	}
 
@@ -88,7 +89,7 @@ function App() {
 				<DataContext.Provider value={ storageMode == StorageMode.Local ? LocalData : FirebaseData }>
 					<section>
 						<Collections
-							userId={user?.uid ?? "guest"}
+							userId={user?.email ?? "guest"}
 							handleDeletion={handleDeletion}
 							activeCollection={activeCollection as Collection}
 							setActiveCollection={(collection: Collection)=>setActiveCollection(collection)}
