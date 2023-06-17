@@ -44,6 +44,7 @@ const ICollectionsConverter = {
 export const FirebaseData: IDataContext = {
 	
 	loadCollections: async (userId: string): Promise<ICollections> => {
+		console.debug("Loading online collections");
 		const email = auth.currentUser?.email ?? "guest"
 
 		const ref = doc(db, email, "collections").withConverter(ICollectionsConverter);
@@ -66,6 +67,7 @@ export const FirebaseData: IDataContext = {
 
 export const LocalData: IDataContext = {
 	loadCollections: (userId: string) => new Promise(resolve => {
+		console.debug("Loading local collections");
 		const localCollections = localStorage.getItem("collections");
 		if (!localCollections) return {};
 
@@ -84,4 +86,4 @@ export const LocalData: IDataContext = {
 	}
 }
 
-export default React.createContext<IDataContext | null>(FirebaseData)
+export default React.createContext<IDataContext | null>(null)

@@ -1,4 +1,4 @@
-import Flashcard, { IFlashcard } from "./flashcard"
+import Flashcard from "./flashcard"
 
 export interface ICollection {
     id: string

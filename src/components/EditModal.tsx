@@ -23,8 +23,8 @@ export default function EditModal ({initialObject, handleSubmit, openState}: {in
                 {
                     initialObject && Object.keys(initialObject).map( (property:string) => { return(
                         <>
-                            {initialObject[property] && <label htmlFor={`${property}`}>{property[0].toUpperCase()+property.slice(1)}</label>}
-                            {initialObject[property] && <input type="text" id={`${property}`} value={output[property]} onChange={(e: any) => handleOnChange(e, property)} />}
+                            {typeof initialObject[property] == 'string' && <label htmlFor={`${property}`}>{property[0].toUpperCase()+property.slice(1)}</label>}
+                            {typeof initialObject[property] == 'string' && <input type="text" id={`${property}`} value={output[property]} onChange={(e: any) => handleOnChange(e, property)} />}
                         </>
                     )})
                 }

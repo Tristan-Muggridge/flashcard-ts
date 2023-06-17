@@ -1,8 +1,9 @@
-import DataContext, { ICollections, IDataContext } from "../context/DataContext";
 import { useContext, useState, useRef} from "react";
 import { BsFillPencilFill, BsTrash, BsXLg, BsPlusLg } from "react-icons/bs"
-import Collection from "../collection";
 
+import DataContext, { ICollections, IDataContext } from "../context/DataContext";
+
+import Collection from "../collection";
 import Flashcard from "../flashcard";
 import EditModal from "./EditModal";
 

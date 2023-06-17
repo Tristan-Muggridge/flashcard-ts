@@ -23,14 +23,7 @@ export default function CollectionSelection ({collections, handleDeletion, userI
     
     const dataContext = useContext(DataContext);
     
-    useEffect( () => {
-        const retrieveCollections = async () => {
-            const c = await dataContext?.loadCollections(userId) as ICollections
-            setCollections({...c})
-        }
-
-        retrieveCollections();
-    }, [])
+    console.debug("CollectionSelection: ", collections, activeCollection, storageMode, userId)
 
     const handleSelectionClick = (c: collection) => {setActiveCollection(c); setActive(true)};
     
